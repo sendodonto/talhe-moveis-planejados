@@ -22,12 +22,12 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
   descricao={`Peça um orçamento de móveis planejados à ${empresa.nome}: escolha os ambientes, informe a cidade e conte o que precisa.`}
 >
   <div class="faixa pagina">
-    <header class="cabeca">
-      <h1 class="t-display">Vamos desenhar <em>o seu ambiente</em></h1>
-      <p class="t-lead">Dois minutos aqui poupam semanas de obra. Conte o essencial; nós voltamos com os próximos passos.</p>
-    </header>
-
     <div class="grade">
+      <header class="intro">
+        <h1 class="t-display">Vamos desenhar o seu ambiente.</h1>
+        <p class="intro__lead">Dois minutos aqui poupam semanas de obra. Conte o essencial; nós voltamos com os próximos passos.</p>
+      </header>
+
       <form
         class="form"
         novalidate
@@ -41,6 +41,8 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
       >
         <div class="form__resumo-erros" data-resumo-erros role="alert" tabindex="-1" hidden></div>
 
+        <section class="grupo" aria-labelledby="g1">
+        <h2 class="grupo__titulo" id="g1"><span aria-hidden="true">1</span>O que você quer planejar?</h2>
         <fieldset class="campo" data-campo="ambientes">
           <legend>Ambientes <span class="obrig">obrigatório</span></legend>
           <p class="campo__ajuda" id="ajuda-ambientes">Marque um ou mais.</p>
@@ -60,7 +62,10 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
           </div>
           <p class="campo__erro" id="erro-ambientes" data-erro></p>
         </fieldset>
+        </section>
 
+        <section class="grupo" aria-labelledby="g2">
+        <h2 class="grupo__titulo" id="g2"><span aria-hidden="true">2</span>Como falamos com você?</h2>
         <div class="campo">
           <label for="nome">Seu nome <span class="obrig">obrigatório</span></label>
           <input id="nome" name="nome" type="text" autocomplete="name" required maxlength="120" aria-describedby="erro-nome" />
@@ -80,28 +85,11 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
           </div>
         </div>
 
-        <div class="campo-duplo">
-          <div class="campo">
-            <label for="cidade">Cidade e bairro <span class="obrig">obrigatório</span></label>
-            <input id="cidade" name="cidade" type="text" autocomplete="address-level2" required maxlength="120" aria-describedby="ajuda-cidade erro-cidade" />
-            <p class="campo__ajuda" id="ajuda-cidade">Atendemos {empresa.regiaoAtendimento}.</p>
-            <p class="campo__erro" id="erro-cidade" data-erro></p>
-          </div>
-          <div class="campo">
-            <label for="fase">Momento da obra <span class="opc">opcional</span></label>
-            <div class="seletor">
-              <select id="fase" name="fase">
-                <option value="">Selecione</option>
-                {fases.map((f) => <option>{f}</option>)}
-              </select>
-            </div>
-          </div>
-        </div>
-
         <div class="campo">
-          <label for="mensagem">O que você precisa? <span class="opc">opcional</span></label>
-          <textarea id="mensagem" name="mensagem" rows="5" maxlength="2000" aria-describedby="ajuda-mensagem"></textarea>
-          <p class="campo__ajuda" id="ajuda-mensagem">Medidas aproximadas, o que não funciona hoje, eletrodomésticos que vão ficar, prazo desejado.</p>
+          <label for="cidade">Cidade e bairro <span class="obrig">obrigatório</span></label>
+          <input id="cidade" name="cidade" type="text" autocomplete="address-level2" required maxlength="120" aria-describedby="ajuda-cidade erro-cidade" />
+          <p class="campo__ajuda" id="ajuda-cidade">Atendemos {empresa.regiaoAtendimento}.</p>
+          <p class="campo__erro" id="erro-cidade" data-erro></p>
         </div>
 
         <fieldset class="campo">
@@ -112,6 +100,26 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
             <label class="ficha"><input type="radio" name="retorno" value="E-mail" /><span>E-mail</span></label>
           </div>
         </fieldset>
+        </section>
+
+        <section class="grupo" aria-labelledby="g3">
+        <h2 class="grupo__titulo" id="g3"><span aria-hidden="true">3</span>Conte um pouco mais <span class="opc">opcional</span></h2>
+        <div class="campo">
+          <label for="fase">Momento da obra</label>
+          <div class="seletor">
+            <select id="fase" name="fase">
+              <option value="">Selecione</option>
+              {fases.map((f) => <option>{f}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="mensagem">O que você precisa?</label>
+          <textarea id="mensagem" name="mensagem" rows="5" maxlength="2000" aria-describedby="ajuda-mensagem"></textarea>
+          <p class="campo__ajuda" id="ajuda-mensagem">Medidas aproximadas, o que não funciona hoje, eletrodomésticos que vão ficar, prazo desejado.</p>
+        </div>
+        </section>
 
         <input type="hidden" name="referencia" value="" />
         <div class="armadilha" aria-hidden="true">
@@ -146,16 +154,25 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
       </form>
 
       <aside class="lateral" aria-labelledby="depois-titulo">
-        <h2 class="t-rotulo" id="depois-titulo">Depois do envio</h2>
+        <h2 class="lateral__titulo" id="depois-titulo">O que acontece depois</h2>
         <ol role="list" class="depois">
-          <li><span class="t-rotulo">01</span><p>Lemos o pedido e respondemos pelo canal que você escolheu.</p></li>
-          <li><span class="t-rotulo">02</span><p>Se fizer sentido seguir, agendamos a visita para medir o ambiente.</p></li>
-          <li><span class="t-rotulo">03</span><p>Com as medidas, desenvolvemos o projeto em 3D e o orçamento detalhado.</p></li>
+          <li>
+            <span class="depois__icone"><Icone nome="whatsapp" /></span>
+            <div><strong>Resposta</strong><p>Lemos o pedido e respondemos pelo canal que você escolheu.</p></div>
+          </li>
+          <li>
+            <span class="depois__icone"><Icone nome="trena" /></span>
+            <div><strong>Medição</strong><p>Se fizer sentido seguir, agendamos a visita para medir o ambiente.</p></div>
+          </li>
+          <li>
+            <span class="depois__icone"><Icone nome="cubo" /></span>
+            <div><strong>Projeto em 3D</strong><p>Com as medidas, desenvolvemos o projeto e o orçamento detalhado.</p></div>
+          </li>
         </ol>
         {
           (temWhatsapp || empresa.contato.telefone || empresa.contato.email) && (
             <div class="lateral__contato">
-              <h2 class="t-rotulo">Ou fale direto</h2>
+              <h2 class="lateral__titulo">Ou fale direto</h2>
               {temWhatsapp && (
                 <a class="botao botao--whats botao--bloco" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome} e quero um orçamento.`)} target="_blank" rel="noopener">
                   <Icone nome="whatsapp" /> WhatsApp
@@ -174,6 +191,7 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
             </div>
           )
         }
+        <a class="lateral__link" href={u('/projetos/cozinha-em-u')}>Ainda decidindo? Veja a cozinha em 3D <Icone nome="seta" /></a>
       </aside>
     </div>
   </div>
@@ -181,27 +199,41 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
 
 <style>
   .pagina {
-    padding-block: clamp(16px, 4vw, 56px) clamp(64px, 9vw, 128px);
-  }
-  .cabeca {
-    display: grid;
-    gap: 16px;
-    margin-bottom: clamp(32px, 5vw, 64px);
-  }
-  .cabeca h1 {
-    max-width: 13ch;
-  }
-  .cabeca .t-lead {
-    max-width: 46ch;
+    padding-block: clamp(20px, 4vw, 48px) clamp(64px, 9vw, 112px);
   }
   .grade {
     display: grid;
-    gap: 56px;
+    grid-template-areas: 'intro' 'form' 'lateral';
+    gap: 28px;
+  }
+  .intro {
+    grid-area: intro;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+  .intro h1 {
+    max-width: 14ch;
+  }
+  .intro__lead {
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--tinta-2);
+    max-width: 40ch;
+  }
+  .form {
+    grid-area: form;
+  }
+  .lateral {
+    grid-area: lateral;
   }
   @media (min-width: 1024px) {
     .grade {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-      column-gap: clamp(48px, 7vw, 128px);
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-areas: 'intro form' 'lateral form';
+      grid-template-rows: auto 1fr;
+      column-gap: clamp(40px, 5vw, 80px);
+      row-gap: 32px;
       align-items: start;
     }
     .lateral {
@@ -213,7 +245,46 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
   /* ——— Campos ——— */
   .form {
     display: grid;
-    gap: 26px;
+    gap: 22px;
+    padding: 22px 18px 26px;
+    border-radius: var(--raio-g);
+    background: var(--creme);
+    box-shadow: 0 1px 2px rgb(43 34 28 / 0.06), 0 24px 50px -34px rgb(43 34 28 / 0.4);
+  }
+  @media (min-width: 640px) {
+    .form {
+      padding: 34px 36px 38px;
+    }
+  }
+  .grupo {
+    display: grid;
+    gap: 20px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--linha);
+  }
+  .grupo__titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: clamp(1.15rem, 1.08rem + 0.3vw, 1.3rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+  .grupo__titulo > span[aria-hidden] {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--tinta);
+    color: var(--creme);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .grupo__titulo .opc {
+    margin-left: 0;
   }
   fieldset {
     border: 0;
@@ -264,6 +335,7 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
     background: var(--creme);
     border: 1px solid var(--linha-forte);
     border-radius: 14px;
+    background: #fbf8f3;
     color: var(--tinta);
     transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
   }
@@ -469,29 +541,56 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
   /* ——— Lateral ——— */
   .lateral {
     display: grid;
-    gap: 20px;
+    gap: 22px;
     padding: 26px 22px;
-    border-radius: var(--raio);
-    background: var(--papel-2);
+    border-radius: var(--raio-g);
+    background: var(--grafite);
+    color: var(--sobre-grafite);
+  }
+  .lateral__titulo {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sobre-grafite-2);
   }
   .depois {
     display: grid;
+    gap: 18px;
   }
   .depois li {
     display: grid;
-    grid-template-columns: 2.6em 1fr;
-    gap: 8px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--linha);
-    color: var(--tinta-2);
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+    align-items: start;
   }
-  .depois .t-rotulo {
-    padding-top: 0.3em;
+  .depois strong {
+    display: block;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+  .depois p {
+    color: var(--sobre-grafite-2);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .depois__icone {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgb(245 237 226 / 0.08);
+    color: var(--led);
+  }
+  .depois__icone :global(svg) {
+    width: 20px;
+    height: 20px;
   }
   .lateral__contato {
     display: grid;
     gap: 10px;
-    margin-top: 12px;
   }
   .lateral__linha {
     display: inline-flex;
@@ -504,6 +603,24 @@ const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móvei
   .lateral__linha :global(svg) {
     width: 20px;
     height: 20px;
+  }
+  .lateral__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    min-height: 44px;
+    padding-top: 18px;
+    border-top: 1px solid #43372d;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .lateral__link:hover {
+    color: var(--led);
+  }
+  .lateral__link :global(svg) {
+    width: 18px;
+    height: 18px;
   }
 </style>
 

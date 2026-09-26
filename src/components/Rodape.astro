@@ -36,48 +36,61 @@ const ano = new Date().getFullYear();
   }
 
   <div class="base">
-    <div class="faixa base__corpo">
-      <a href={u('/')} class="base__marca" aria-label={`${empresa.nome} — página inicial`}><Marca /></a>
+    <div class="faixa">
+      <div class="base__grade">
+        <div class="base__marca">
+          <a href={u('/')} aria-label={`${empresa.nome} — página inicial`}><Marca /></a>
+          <p>Móveis planejados sob medida, da medição à montagem, em {empresa.regiaoAtendimento}.</p>
+          <a class="base__cta" href={u('/orcamento')}>Pedir orçamento <Icone nome="seta" /></a>
+        </div>
 
-      <nav aria-label="Rodapé" class="base__nav">
-        <a href={u('/projetos')}>Ambientes</a>
-        <a href={u('/projetos/cozinha-em-u')}>Cozinha 3D</a>
-        <a href={u('/sobre')}>Como trabalhamos</a>
-        <a href={u('/orcamento')}>Orçamento</a>
-      </nav>
+        <nav class="base__coluna" aria-labelledby="rodape-nav">
+          <h2 id="rodape-nav">Navegar</h2>
+          <ul role="list">
+            <li><a href={u('/projetos')}>Ambientes</a></li>
+            <li><a href={u('/projetos/cozinha-em-u')}>Cozinha em 3D</a></li>
+            <li><a href={u('/sobre')}>Como trabalhamos</a></li>
+            <li><a href={u('/orcamento')}>Orçamento</a></li>
+          </ul>
+        </nav>
 
-      <ul role="list" class="base__contato">
-        {c.telefone && (
-          <li>
-            <a href={`tel:${c.telefone.replace(/\D/g, '')}`}><Icone nome="telefone" />{c.telefone}</a>
-          </li>
-        )}
-        {c.email && (
-          <li>
-            <a href={`mailto:${c.email}`}><Icone nome="email" />{c.email}</a>
-          </li>
-        )}
-        {temWhatsapp && (
-          <li>
-            <a href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener"><Icone nome="whatsapp" />WhatsApp</a>
-          </li>
-        )}
-        <li><span><Icone nome="local" />{empresa.endereco || empresa.regiaoAtendimento}</span></li>
-        {empresa.horario && (
-          <li>
-            <span><Icone nome="relogio" />{empresa.horario}</span>
-          </li>
-        )}
-        {c.instagram && (
-          <li>
-            <a href={`https://instagram.com/${c.instagram}`} target="_blank" rel="noopener" aria-label={`Instagram @${c.instagram}`}><Icone nome="instagram" />@{c.instagram}</a>
-          </li>
-        )}
-      </ul>
+        <div class="base__coluna">
+          <h2>Atendimento</h2>
+          <ul role="list">
+            <li><span><Icone nome="local" />{empresa.endereco || empresa.regiaoAtendimento}</span></li>
+            {c.telefone && (
+              <li>
+                <a href={`tel:${c.telefone.replace(/\D/g, '')}`}><Icone nome="telefone" />{c.telefone}</a>
+              </li>
+            )}
+            {c.email && (
+              <li>
+                <a href={`mailto:${c.email}`}><Icone nome="email" />{c.email}</a>
+              </li>
+            )}
+            {temWhatsapp && (
+              <li>
+                <a href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener"><Icone nome="whatsapp" />WhatsApp</a>
+              </li>
+            )}
+            {empresa.horario && (
+              <li>
+                <span><Icone nome="relogio" />{empresa.horario}</span>
+              </li>
+            )}
+            {c.instagram && (
+              <li>
+                <a href={`https://instagram.com/${c.instagram}`} target="_blank" rel="noopener"><Icone nome="instagram" />@{c.instagram}</a>
+              </li>
+            )}
+            <li><a href={u('/orcamento')}><Icone nome="formulario" />Formulário de orçamento</a></li>
+          </ul>
+        </div>
+      </div>
 
-      <div class="base__legal t-nota">
-        <span>© {ano} {empresa.nomeCompleto}{empresa.cnpj && ` · CNPJ ${empresa.cnpj}`}</span>
-        <span>Fotos de ambientes: referências do Unsplash, com crédito em cada imagem. Cozinha: estudo 3D.</span>
+      <div class="base__legal">
+        <p>© {ano} {empresa.nomeCompleto}{empresa.cnpj && ` · CNPJ ${empresa.cnpj}`}</p>
+        <p class="base__credito">Fotos de ambientes: referências do Unsplash, com crédito em cada imagem. Cozinha: estudo 3D.</p>
         <a href={u('/privacidade')}>Privacidade</a>
       </div>
     </div>
@@ -109,71 +122,121 @@ const ano = new Date().getFullYear();
   .base {
     background: var(--grafite);
     color: var(--sobre-grafite);
-    padding-block: 36px 28px;
+    padding-block: clamp(48px, 6vw, 80px) 24px;
   }
-  .base__corpo {
+  .base__grade {
     display: grid;
-    gap: 24px;
+    gap: 40px;
+    padding-bottom: clamp(36px, 5vw, 56px);
   }
   .base__marca {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    justify-items: start;
+  }
+  .base__marca > a:first-child {
     text-decoration: none;
-    width: fit-content;
-    padding-block: 8px;
+    padding-block: 6px;
   }
-  .base__nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 24px;
+  .base__marca p {
+    color: var(--sobre-grafite-2);
+    max-width: 34ch;
+    line-height: 1.55;
   }
-  .base__nav a,
-  .base__contato a,
-  .base__contato span {
+  .base__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    margin-top: 6px;
+    padding: 0 22px;
+    border-radius: 999px;
+    background: var(--creme);
+    color: var(--grafite);
+    font-weight: 650;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease), transform 0.1s var(--ease);
+  }
+  .base__cta:hover {
+    background: var(--led);
+  }
+  .base__cta:active {
+    transform: scale(0.97);
+  }
+  .base__cta :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+  .base__coluna h2 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sobre-grafite-2);
+    margin-bottom: 10px;
+  }
+  .base__coluna ul {
+    display: grid;
+  }
+  .base__coluna a,
+  .base__coluna span {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     min-height: 44px;
     text-decoration: none;
+    line-height: 1.35;
   }
-  .base__nav a:hover,
-  .base__contato a:hover {
+  .base__coluna a:hover {
     color: var(--led);
   }
-  .base__contato {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 28px;
-    color: var(--sobre-grafite-2);
-    padding-block: 8px;
-    border-block: 1px solid #43372d;
-  }
-  .base__contato :global(svg) {
+  .base__coluna :global(svg) {
     width: 18px;
     height: 18px;
     flex: none;
+    color: var(--sobre-grafite-2);
   }
   .base__legal {
+    display: grid;
+    gap: 6px;
+    padding-top: 20px;
+    border-top: 1px solid #43372d;
+    font-size: 0.85rem;
     color: var(--sobre-grafite-2);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 24px;
-    justify-content: space-between;
   }
   .base__legal a {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
+    width: fit-content;
+  }
+  .base__legal a:hover {
+    color: var(--led);
+  }
+  @media (min-width: 720px) {
+    .base__grade {
+      grid-template-columns: 1fr 1fr;
+    }
+    .base__marca {
+      grid-column: 1 / -1;
+    }
   }
   @media (min-width: 1024px) {
-    .base__corpo {
-      grid-template-columns: auto 1fr;
-      align-items: center;
+    .base__grade {
+      grid-template-columns: 5fr 3fr 4fr;
+      column-gap: clamp(40px, 6vw, 96px);
     }
-    .base__nav {
-      justify-content: flex-end;
+    .base__marca {
+      grid-column: auto;
     }
-    .base__contato,
     .base__legal {
-      grid-column: 1 / -1;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      column-gap: 32px;
+    }
+    .base__credito {
+      text-align: center;
     }
   }
 </style>
