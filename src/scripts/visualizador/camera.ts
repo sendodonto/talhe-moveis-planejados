@@ -12,7 +12,7 @@ export interface Orbita {
   dist: number;
 }
 
-const INICIAL: Orbita = { alvo: [0, 0.92, -0.1], az: 0.62, polar: 1.2, dist: 5.7 };
+const INICIAL: Orbita = { alvo: [0, 0.78, -0.1], az: 0.62, polar: 1.2, dist: 5.7 };
 const FOV_PAISAGEM = 40;
 const FOV_RETRATO = 50;
 
@@ -21,7 +21,7 @@ export function vistaInicial(aspecto: number): Orbita & { fov: number } {
   const fov = aspecto < 1 ? FOV_RETRATO : FOV_PAISAGEM;
   // Largura útil que precisa caber no quadro (m). Em retrato aceitamos cortar
   // um pouco das laterais para a cozinha não ficar minúscula.
-  const largura = aspecto < 0.75 ? 1.75 : aspecto < 1 ? 2.2 : 4.0;
+  const largura = aspecto < 0.75 ? 1.75 : aspecto < 1 ? 2.2 : 4.9;
   const hfov = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(fov / 2)) * aspecto);
   const dist = Math.max(INICIAL.dist, largura / Math.tan(hfov / 2));
   // Em telas bem altas, o alvo desce um pouco para a cozinha ocupar o meio do quadro.

@@ -13,8 +13,8 @@ import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUnifo
 export type Qualidade = 'alta' | 'media' | 'baixa';
 
 /** Fundo e piso do estúdio (lineares ao tom da página depois do tonemapping). */
-export const COR_ESTUDIO = 0xd6c8b4;
-const COR_CHAO = 0xa89a87;
+export const COR_ESTUDIO = 0xf1ece5;
+const COR_CHAO = 0xbfbcb8;
 
 export interface HotspotModelo {
   /** Nome do nó no GLB, ex.: HOTSPOT_Bancada */
@@ -175,9 +175,9 @@ export async function montarCena(
         m.opacity = 0.62;
         m.depthWrite = false;
       }
-      // Em aparelhos modestos, a transmissão (um passe extra de render) vira
-      // transparência simples; o vidro continua legível.
-      if (qualidade === 'baixa' && m.transmission > 0) {
+      // A transmissão renderiza a cena inteira de novo a cada quadro. Nos vidros
+      // pequenos deste modelo (forno, potes) a transparência simples basta.
+      if (m.transmission > 0) {
         m.transmission = 0;
         m.transparent = true;
         m.opacity = 0.35;
@@ -252,7 +252,8 @@ function criarAmbienteDeReflexo(): THREE.Scene {
 }
 
 export interface Pipeline {
-  render(): void;
+  /** completo=false: quadro rápido, sem oclusão de ambiente (usado durante o movimento). */
+  render(completo?: boolean): void;
   setSize(largura: number, altura: number): void;
   dispose(): void;
 }
@@ -284,7 +285,9 @@ export function criarPipeline(
   composer.addPass(ao);
   composer.addPass(new OutputPass());
   return {
-    render: () => composer.render(),
+    // Durante o movimento, render direto (com MSAA do próprio canvas) — várias vezes
+    // mais barato. O quadro com oclusão de ambiente é feito quando a câmera para.
+    render: (completo = true) => (completo ? composer.render() : renderer.render(scene, camera)),
     setSize: (w, h) => {
       renderer.setSize(w, h, false);
       composer.setPixelRatio(renderer.getPixelRatio());

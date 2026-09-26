@@ -43,14 +43,13 @@ export function iniciarVisualizador(raiz: HTMLElement) {
   const progresso = $('[data-v3d-progresso]');
   const dica = $('[data-v3d-dica]');
   const painelDetalhe = $('[data-v3d-painel-detalhe]');
-  const painel = $('.v3d__painel');
   const desktop = matchMedia('(min-width: 1024px)');
 
   // Diz ao motor que parte do quadro a interface cobre, para a câmera centralizar
   // a cozinha na área livre e esconder marcadores que cairiam sob painel ou botões.
   function atualizarMargens() {
     if (!motor) return;
-    if (desktop.matches && !imersivo) motor.definirMargens({ direita: painel.offsetWidth + 32, topo: 0, base: 76 });
+    if (desktop.matches && !imersivo) motor.definirMargens({ direita: 0, topo: 72, base: 84 });
     else if (desktop.matches) motor.definirMargens({ direita: 0, topo: 0, base: 76 });
     else motor.definirMargens({ direita: 0, topo: imersivo ? 76 : 0, base: imersivo ? 28 : 0 });
   }

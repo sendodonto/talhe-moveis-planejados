@@ -58,11 +58,12 @@ const MARGEM = 0.14;
 
 export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
   const renderer = new THREE.WebGLRenderer({
-    antialias: o.qualidade === 'baixa',
+    antialias: true,
     alpha: true,
     powerPreference: 'high-performance',
   });
-  const dprMax = { alta: 2, media: 1.5, baixa: 1 }[o.qualidade];
+  // Acima de 1,5 o custo cresce muito e o ganho visual é pequeno num quadro de 16:9.
+  const dprMax = { alta: 1.5, media: 1.25, baixa: 1 }[o.qualidade];
   let dpr = Math.min(window.devicePixelRatio || 1, dprMax);
   renderer.setPixelRatio(dpr);
   configurarRenderer(renderer, o.qualidade);
@@ -138,7 +139,8 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
       else continuar = true;
     }
     if (controls.update()) continuar = true;
-    pipeline.render();
+    // Em movimento: quadro rápido. Parado: quadro completo, com oclusão de ambiente.
+    pipeline.render(!continuar);
     atualizarMarcadores(agora, continuar);
     if (continuar) {
       medir(agora);

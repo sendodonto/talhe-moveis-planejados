@@ -221,32 +221,32 @@
     "hotspots": [
       {
         "no": "HOTSPOT_Armarios",
-        "x": 0.4384,
-        "y": 0.2315,
+        "x": 0.5693,
+        "y": 0.1828,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Iluminacao",
-        "x": 0.4098,
-        "y": 0.2986,
+        "x": 0.5379,
+        "y": 0.2589,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Bancada",
-        "x": 0.4529,
-        "y": 0.4703,
+        "x": 0.5849,
+        "y": 0.4453,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Peninsula",
-        "x": 0.4589,
-        "y": 0.6729,
+        "x": 0.5934,
+        "y": 0.6643,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Cuba",
-        "x": 0.2886,
-        "y": 0.4622,
+        "x": 0.4059,
+        "y": 0.4367,
         "visivel": true
       }
     ]
@@ -257,32 +257,32 @@
     "hotspots": [
       {
         "no": "HOTSPOT_Armarios",
-        "x": 0.6528,
-        "y": 0.2088,
+        "x": 0.6541,
+        "y": 0.1828,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Iluminacao",
-        "x": 0.5821,
-        "y": 0.2864,
+        "x": 0.5827,
+        "y": 0.2632,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Bancada",
-        "x": 0.6846,
-        "y": 0.4683,
+        "x": 0.6861,
+        "y": 0.4461,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Peninsula",
-        "x": 0.7182,
-        "y": 0.7024,
+        "x": 0.7206,
+        "y": 0.6745,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Cuba",
-        "x": 0.2958,
-        "y": 0.4598,
+        "x": 0.2942,
+        "y": 0.4377,
         "visivel": true
       }
     ]
@@ -293,32 +293,32 @@
     "hotspots": [
       {
         "no": "HOTSPOT_Armarios",
-        "x": 0.5844,
-        "y": 0.2183,
+        "x": 0.5703,
+        "y": 0.2467,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Iluminacao",
-        "x": 0.5463,
-        "y": 0.2892,
+        "x": 0.5389,
+        "y": 0.3049,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Bancada",
-        "x": 0.6036,
-        "y": 0.4689,
+        "x": 0.587,
+        "y": 0.4559,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Peninsula",
-        "x": 0.6128,
-        "y": 0.6832,
+        "x": 0.5909,
+        "y": 0.6259,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Cuba",
-        "x": 0.3852,
-        "y": 0.4605,
+        "x": 0.4035,
+        "y": 0.4489,
         "visivel": true
       }
     ]

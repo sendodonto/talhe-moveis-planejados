@@ -200,8 +200,8 @@ const dados = {
      ───────────────────────────────────────────────────────────── */
   .v3d {
     /* mesma cor do estúdio renderizado (topo → piso) */
-    --v3d-fundo: linear-gradient(180deg, #d0c2ad 0%, #c9b79d 55%, #c0a98b 100%);
-    --v3d-vidro: rgb(245 237 226 / 0.86);
+    --v3d-fundo: linear-gradient(180deg, #eae4dd 0%, #e2d8cd 60%, #dccfc0 100%);
+    --v3d-vidro: rgb(250 246 240 / 0.97);
     --v3d-painel: clamp(300px, 26%, 360px);
     position: relative;
   }
@@ -356,7 +356,6 @@ const dados = {
     padding: 6px 12px;
     border-radius: 999px;
     background: var(--v3d-vidro);
-    backdrop-filter: blur(8px);
   }
   .v3d[data-estado='carregando'] .v3d__carregando {
     display: grid;
@@ -368,7 +367,6 @@ const dados = {
     padding: 14px 18px;
     border-radius: var(--raio);
     background: var(--v3d-vidro);
-    backdrop-filter: blur(10px);
     text-align: center;
   }
   .v3d__barra {
@@ -413,7 +411,6 @@ const dados = {
     padding: 4px;
     border-radius: 999px;
     background: var(--v3d-vidro);
-    backdrop-filter: blur(10px);
     box-shadow: 0 6px 20px -10px rgb(35 28 23 / 0.5);
   }
   .v3d[data-estado='ativo']:not([data-pausado]) .v3d__ferramentas {
@@ -480,7 +477,6 @@ const dados = {
     background: rgb(35 28 23 / 0.9);
     color: var(--sobre-grafite);
     border-radius: var(--raio);
-    backdrop-filter: blur(8px);
   }
   .v3d__dica ul {
     display: grid;
@@ -603,6 +599,13 @@ const dados = {
     align-items: center;
     gap: 12px;
   }
+  .v3d__detalhe .t-sub {
+    font-family: var(--f-sans);
+    font-weight: 650;
+    font-size: 1.3rem;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
   .v3d__resumo {
     font-size: 1.05rem;
     line-height: 1.45;
@@ -642,7 +645,7 @@ const dados = {
     margin-top: 16px;
   }
 
-  /* ——— Desktop: palco amplo, painel flutuante, controles embaixo ——— */
+  /* ——— Desktop: palco amplo, barra de pontos embaixo, ficha flutuante ——— */
   @media (min-width: 1024px) {
     .v3d__grade {
       position: relative;
@@ -650,7 +653,7 @@ const dados = {
     }
     .v3d__palco {
       aspect-ratio: 16 / 9;
-      max-height: calc(100svh - var(--topo) - 40px);
+      max-height: calc(100svh - var(--topo) - 32px);
       min-height: 520px;
       width: 100%;
     }
@@ -664,31 +667,45 @@ const dados = {
     .v3d__marcador--estatico.so-retrato {
       display: none;
     }
+    /* O painel vira uma camada sem caixa: só os filhos recebem clique. */
     .v3d:not(.is-imersivo) .v3d__painel {
       position: absolute;
       z-index: 6;
-      top: 16px;
+      left: 16px;
       right: 16px;
       bottom: 16px;
-      width: var(--v3d-painel);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      padding: 22px 22px 18px;
-      border-radius: var(--raio);
-      background: var(--v3d-vidro);
-      backdrop-filter: blur(16px) saturate(1.1);
-      box-shadow: 0 20px 50px -30px rgb(35 28 23 / 0.6);
-      scrollbar-width: thin;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
     }
+    .v3d:not(.is-imersivo) .v3d__painel > * {
+      pointer-events: auto;
+    }
+    .v3d:not(.is-imersivo) .v3d__titulo-lista,
+    .v3d:not(.is-imersivo) .v3d__vazio {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    /* Barra de pontos */
     .v3d:not(.is-imersivo) .v3d__lista {
-      flex-direction: column;
       flex-wrap: nowrap;
-      gap: 4px;
+      gap: 2px;
+      padding: 5px;
+      border-radius: 999px;
+      background: var(--v3d-vidro);
+      box-shadow: 0 1px 2px rgb(43 34 28 / 0.08), 0 14px 34px -18px rgb(43 34 28 / 0.45);
     }
     .v3d:not(.is-imersivo) .v3d__lista button {
-      width: 100%;
+      min-height: 44px;
+      padding: 0 16px 0 6px;
       background: transparent;
-      padding: 0 12px 0 6px;
+      font-size: 0.92rem;
     }
     .v3d:not(.is-imersivo) .v3d__lista button:hover {
       background: rgb(43 34 28 / 0.06);
@@ -696,51 +713,62 @@ const dados = {
     }
     .v3d:not(.is-imersivo) .v3d__lista button.is-ativo {
       background: var(--tinta);
+      color: var(--creme);
     }
-    .v3d:not(.is-imersivo) .v3d__rotulo-longo {
-      display: inline;
+    .v3d:not(.is-imersivo) .v3d__num {
+      width: 30px;
+      height: 30px;
     }
-    .v3d:not(.is-imersivo) .v3d__rotulo-curto {
-      display: none;
+    /* Ficha do ponto: flutua acima da barra, à esquerda */
+    .v3d:not(.is-imersivo) .v3d__detalhes {
+      position: absolute;
+      left: 0;
+      bottom: 70px;
+      width: min(380px, 42%);
+      max-height: min(440px, calc(100svh - var(--topo) - 260px));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 4px 20px 16px;
+      border-radius: var(--raio);
+      background: var(--v3d-vidro);
+      box-shadow: 0 1px 2px rgb(43 34 28 / 0.08), 0 20px 44px -22px rgb(43 34 28 / 0.5);
+      scrollbar-width: thin;
     }
-    /* com um ponto aberto, a lista encolhe para números e o detalhe ganha o espaço */
-    .v3d:not(.is-imersivo).tem-selecao .v3d__lista {
-      flex-direction: row;
-      flex-wrap: wrap;
+    /* Chamada principal na própria barra */
+    .v3d:not(.is-imersivo) .v3d__cta {
+      margin: 0;
+      padding: 0 22px;
+      min-height: 54px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--tinta);
+      color: var(--creme);
+      box-shadow: 0 14px 34px -18px rgb(43 34 28 / 0.6);
     }
-    .v3d:not(.is-imersivo).tem-selecao .v3d__lista button {
-      width: auto;
-      padding: 0;
-      min-height: 44px;
-      min-width: 44px;
-      justify-content: center;
+    .v3d:not(.is-imersivo) .v3d__cta:hover {
+      background: var(--madeira);
+      color: var(--creme);
     }
-    .v3d:not(.is-imersivo).tem-selecao .v3d__lista button .v3d__rotulo-longo {
-      display: none;
-    }
-    .v3d:not(.is-imersivo).tem-selecao .v3d__lista button .v3d__num {
-      background: transparent;
-      color: inherit;
-    }
-    .v3d:not(.is-imersivo) .v3d__detalhe {
-      border-top: 1px solid var(--linha);
-      margin-top: 14px;
-    }
+    /* Controles em cima, à direita */
     .v3d:not(.is-imersivo) .v3d__ferramentas {
-      top: auto;
-      right: auto;
-      left: 16px;
-      bottom: 16px;
+      top: 16px;
+      right: 16px;
+      bottom: auto;
+      left: auto;
     }
     .v3d.js[data-estado='ocioso']:not(.is-imersivo) .v3d__capa,
     .v3d[data-estado='carregando']:not(.is-imersivo) .v3d__carregando {
-      left: calc((100% - var(--v3d-painel) - 32px) / 2);
+      left: 50%;
+      bottom: auto;
+      top: 16px;
     }
     .v3d__capa-nota {
       display: inline-block;
     }
     .v3d[data-estado='erro']:not(.is-imersivo) .v3d__erro {
-      right: calc(var(--v3d-painel) + 32px);
+      top: 16px;
+      bottom: auto;
+      right: auto;
       max-width: 420px;
     }
   }
@@ -755,7 +783,7 @@ const dados = {
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: #d0c2ad;
+    background: #eae4dd;
     color: var(--tinta);
   }
   .v3d.is-imersivo .v3d__grade {

@@ -195,6 +195,16 @@ button {
   font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem);
   line-height: 1.2;
 }
+/* Destaque em sans: títulos de seção no estilo da referência (peso forte,
+   tracking negativo no tamanho grande, entrelinha curta). */
+.t-destaque {
+  font-family: var(--f-sans);
+  font-weight: 650;
+  font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.032em;
+  text-wrap: balance;
+}
 .t-display em,
 .t-titulo em,
 .t-sub em {
