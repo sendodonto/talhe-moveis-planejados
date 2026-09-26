@@ -1,0 +1,513 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icone from '../components/Icone.astro';
+import { ambientes } from '../content/ambientes';
+import { empresa, temWhatsapp, linkWhatsapp } from '../config/empresa';
+
+const { endpoint, camposExtras } = empresa.formulario;
+const canal = endpoint ? 'endpoint' : temWhatsapp ? 'whatsapp' : empresa.contato.email ? 'email' : 'nenhum';
+const rotuloEnviar = {
+  endpoint: 'Enviar pedido',
+  whatsapp: 'Continuar no WhatsApp',
+  email: 'Abrir no meu e-mail',
+  nenhum: 'Preparar mensagem',
+}[canal];
+const fases = ['Ainda na planta', 'Em obra', 'Obra pronta para receber os móveis', 'Reforma de ambiente existente'];
+---
+
+<Base
+  semChamada
+  titulo="Pedir orçamento"
+  descricao={`Peça um orçamento de móveis planejados à ${empresa.nome}: escolha os ambientes, informe a cidade e conte o que precisa.`}
+>
+  <div class="faixa pagina">
+    <header class="cabeca">
+      <h1 class="t-display">Vamos desenhar <em>o seu ambiente</em></h1>
+      <p class="t-lead">Dois minutos aqui poupam semanas de obra. Conte o essencial; nós voltamos com os próximos passos.</p>
+    </header>
+
+    <div class="grade">
+      <form
+        class="form"
+        novalidate
+        data-form
+        data-canal={canal}
+        data-endpoint={endpoint || undefined}
+        data-extras={JSON.stringify(camposExtras)}
+        data-whatsapp={temWhatsapp ? empresa.contato.whatsapp.replace(/\D/g, '') : undefined}
+        data-email={empresa.contato.email || undefined}
+        data-empresa={empresa.nome}
+      >
+        <div class="form__resumo-erros" data-resumo-erros role="alert" tabindex="-1" hidden></div>
+
+        <fieldset class="campo" data-campo="ambientes">
+          <legend>Ambientes <span class="obrig">obrigatório</span></legend>
+          <p class="campo__ajuda" id="ajuda-ambientes">Marque um ou mais.</p>
+          <div class="fichas">
+            {
+              ambientes.map((a) => (
+                <label class="ficha">
+                  <input type="checkbox" name="ambientes" value={a.nome} data-id={a.id} aria-describedby="ajuda-ambientes erro-ambientes" />
+                  <span>{a.nome}</span>
+                </label>
+              ))
+            }
+            <label class="ficha">
+              <input type="checkbox" name="ambientes" value="Outro" data-id="outro" aria-describedby="ajuda-ambientes erro-ambientes" />
+              <span>Outro</span>
+            </label>
+          </div>
+          <p class="campo__erro" id="erro-ambientes" data-erro></p>
+        </fieldset>
+
+        <div class="campo">
+          <label for="nome">Seu nome <span class="obrig">obrigatório</span></label>
+          <input id="nome" name="nome" type="text" autocomplete="name" required maxlength="120" aria-describedby="erro-nome" />
+          <p class="campo__erro" id="erro-nome" data-erro></p>
+        </div>
+
+        <div class="campo-duplo">
+          <div class="campo">
+            <label for="telefone">WhatsApp ou telefone <span class="obrig">obrigatório</span></label>
+            <input id="telefone" name="telefone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="25" placeholder="(11) 90000-0000" aria-describedby="erro-telefone" />
+            <p class="campo__erro" id="erro-telefone" data-erro></p>
+          </div>
+          <div class="campo">
+            <label for="email">E-mail <span class="opc">opcional</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="160" aria-describedby="erro-email" />
+            <p class="campo__erro" id="erro-email" data-erro></p>
+          </div>
+        </div>
+
+        <div class="campo-duplo">
+          <div class="campo">
+            <label for="cidade">Cidade e bairro <span class="obrig">obrigatório</span></label>
+            <input id="cidade" name="cidade" type="text" autocomplete="address-level2" required maxlength="120" aria-describedby="ajuda-cidade erro-cidade" />
+            <p class="campo__ajuda" id="ajuda-cidade">Atendemos {empresa.regiaoAtendimento}.</p>
+            <p class="campo__erro" id="erro-cidade" data-erro></p>
+          </div>
+          <div class="campo">
+            <label for="fase">Momento da obra <span class="opc">opcional</span></label>
+            <div class="seletor">
+              <select id="fase" name="fase">
+                <option value="">Selecione</option>
+                {fases.map((f) => <option>{f}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="mensagem">O que você precisa? <span class="opc">opcional</span></label>
+          <textarea id="mensagem" name="mensagem" rows="5" maxlength="2000" aria-describedby="ajuda-mensagem"></textarea>
+          <p class="campo__ajuda" id="ajuda-mensagem">Medidas aproximadas, o que não funciona hoje, eletrodomésticos que vão ficar, prazo desejado.</p>
+        </div>
+
+        <fieldset class="campo">
+          <legend>Como prefere que a gente retorne?</legend>
+          <div class="fichas">
+            <label class="ficha"><input type="radio" name="retorno" value="WhatsApp" checked /><span>WhatsApp</span></label>
+            <label class="ficha"><input type="radio" name="retorno" value="Ligação" /><span>Ligação</span></label>
+            <label class="ficha"><input type="radio" name="retorno" value="E-mail" /><span>E-mail</span></label>
+          </div>
+        </fieldset>
+
+        <input type="hidden" name="referencia" value="" />
+        <div class="armadilha" aria-hidden="true">
+          <label>Não preencha este campo <input type="text" name="site" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="campo" data-campo="consentimento">
+          <label class="consentimento">
+            <input type="checkbox" name="consentimento" required aria-describedby="erro-consentimento" />
+            <span>Autorizo a {empresa.nome} a usar estes dados para responder ao meu pedido. <a href={u('/privacidade')} target="_blank">Política de privacidade</a>.</span>
+          </label>
+          <p class="campo__erro" id="erro-consentimento" data-erro></p>
+        </div>
+
+        {
+          canal === 'nenhum' && (
+            <p class="form__aviso t-nota" data-aviso-canal>
+              O envio on-line deste formulário ainda não foi ativado. Ao continuar, montamos a mensagem para você copiar e enviar pelo canal que preferir.
+            </p>
+          )
+        }
+        {canal === 'whatsapp' && <p class="t-nota">Ao continuar, o WhatsApp abre com a sua mensagem pronta. O envio acontece por lá.</p>}
+        {canal === 'email' && <p class="t-nota">Ao continuar, seu aplicativo de e-mail abre com a mensagem pronta. O envio acontece por lá.</p>}
+
+        <button type="submit" class:list={['botao', 'form__enviar', { 'botao--whats': canal === 'whatsapp' }]} data-enviar>
+          {canal === 'whatsapp' && <Icone nome="whatsapp" />}
+          <span data-rotulo>{rotuloEnviar}</span>
+          {canal !== 'whatsapp' && <Icone nome="seta" />}
+        </button>
+
+        <div class="form__retorno" data-retorno role="status" aria-live="polite" tabindex="-1" hidden></div>
+      </form>
+
+      <aside class="lateral" aria-labelledby="depois-titulo">
+        <h2 class="t-rotulo" id="depois-titulo">Depois do envio</h2>
+        <ol role="list" class="depois">
+          <li><span class="t-rotulo">01</span><p>Lemos o pedido e respondemos pelo canal que você escolheu.</p></li>
+          <li><span class="t-rotulo">02</span><p>Se fizer sentido seguir, agendamos a visita para medir o ambiente.</p></li>
+          <li><span class="t-rotulo">03</span><p>Com as medidas, desenvolvemos o projeto em 3D e o orçamento detalhado.</p></li>
+        </ol>
+        {
+          (temWhatsapp || empresa.contato.telefone || empresa.contato.email) && (
+            <div class="lateral__contato">
+              <h2 class="t-rotulo">Ou fale direto</h2>
+              {temWhatsapp && (
+                <a class="botao botao--whats botao--bloco" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome} e quero um orçamento.`)} target="_blank" rel="noopener">
+                  <Icone nome="whatsapp" /> WhatsApp
+                </a>
+              )}
+              {empresa.contato.telefone && (
+                <a class="lateral__linha" href={`tel:${empresa.contato.telefone.replace(/\D/g, '')}`}>
+                  <Icone nome="telefone" /> {empresa.contato.telefone}
+                </a>
+              )}
+              {empresa.contato.email && (
+                <a class="lateral__linha" href={`mailto:${empresa.contato.email}`}>
+                  <Icone nome="email" /> {empresa.contato.email}
+                </a>
+              )}
+            </div>
+          )
+        }
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .pagina {
+    padding-block: clamp(16px, 4vw, 56px) clamp(64px, 9vw, 128px);
+  }
+  .cabeca {
+    display: grid;
+    gap: 16px;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+  .cabeca h1 {
+    max-width: 13ch;
+  }
+  .cabeca .t-lead {
+    max-width: 46ch;
+  }
+  .grade {
+    display: grid;
+    gap: 56px;
+  }
+  @media (min-width: 1024px) {
+    .grade {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+      column-gap: clamp(48px, 7vw, 128px);
+      align-items: start;
+    }
+    .lateral {
+      position: sticky;
+      top: calc(var(--topo) + 24px);
+    }
+  }
+
+  /* ——— Campos ——— */
+  .form {
+    display: grid;
+    gap: 26px;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .campo {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+  .campo label,
+  .campo legend {
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0;
+  }
+  .obrig,
+  .opc {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+    margin-left: 6px;
+  }
+  .campo-duplo {
+    display: grid;
+    gap: 26px;
+  }
+  @media (min-width: 640px) {
+    .campo-duplo {
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+  }
+  input[type='text'],
+  input[type='tel'],
+  input[type='email'],
+  select,
+  textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 14px;
+    font-size: 1.0625rem; /* ≥16px: o iOS não dá zoom no foco */
+    background: var(--creme);
+    border: 1px solid var(--linha-forte);
+    border-radius: 14px;
+    color: var(--tinta);
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.5;
+  }
+  input::placeholder {
+    color: #8a8276;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--tinta);
+    box-shadow: 0 0 0 3px rgb(111 82 55 / 0.35);
+  }
+  [aria-invalid='true'] {
+    border-color: var(--erro) !important;
+  }
+  .seletor {
+    position: relative;
+  }
+  .seletor select {
+    appearance: none;
+    padding-right: 44px;
+  }
+  .seletor::after {
+    content: '';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--tinta);
+    border-bottom: 1.5px solid var(--tinta);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+  .campo__ajuda {
+    font-size: 0.9rem;
+    color: var(--tinta-2);
+  }
+  .campo__erro {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--erro);
+  }
+  .campo__erro:empty {
+    display: none;
+  }
+
+  /* Fichas (checkbox/radio com área de toque grande) */
+  .fichas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .ficha {
+    position: relative;
+    font-weight: 500 !important;
+  }
+  .ficha input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+  .ficha span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--linha-forte);
+    border-radius: 999px;
+    background: var(--creme);
+    transition: background-color 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .ficha input:checked + span {
+    background: var(--tinta);
+    border-color: var(--tinta);
+    color: var(--papel);
+  }
+  .ficha input:checked + span::before {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg) translateY(-2px);
+  }
+  .ficha input:focus-visible + span {
+    outline: 3px solid var(--madeira);
+    outline-offset: 2px;
+  }
+  .fichas[aria-invalid='true'] .ficha span,
+  fieldset[aria-invalid='true'] .ficha span {
+    border-color: var(--erro);
+  }
+
+  .consentimento {
+    display: grid !important;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-weight: 400 !important;
+    font-size: 0.97rem !important;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .consentimento input {
+    width: 22px;
+    height: 22px;
+    margin: 1px 0 0;
+    accent-color: var(--tinta);
+  }
+  .consentimento a {
+    display: inline-block;
+    padding-block: 2px;
+  }
+
+  .armadilha {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .form__aviso {
+    background: var(--papel-2);
+    border-radius: 14px;
+    padding: 12px 16px;
+  }
+  .form__enviar {
+    justify-self: start;
+    min-width: min(100%, 280px);
+  }
+  .form__enviar[aria-busy='true'] {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  @media (max-width: 639px) {
+    .form__enviar {
+      width: 100%;
+    }
+  }
+  .form__resumo-erros {
+    border: 1px solid var(--erro);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--erro);
+    font-weight: 600;
+  }
+  .form__resumo-erros:focus {
+    outline: 3px solid var(--erro);
+    outline-offset: 2px;
+  }
+  .form__resumo-erros ul {
+    margin: 8px 0 0;
+    padding-left: 1.2em;
+    font-weight: 500;
+  }
+  .form__resumo-erros a {
+    color: inherit;
+  }
+
+  .form__retorno {
+    display: grid;
+    gap: 14px;
+    padding: 20px;
+    border: 1px solid var(--linha-forte);
+    border-radius: var(--raio);
+    background: var(--creme);
+  }
+  .form__retorno:focus {
+    outline: 3px solid var(--madeira);
+    outline-offset: 2px;
+  }
+  .form__retorno :global(pre) {
+    white-space: pre-wrap;
+    font-family: var(--f-mono);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: var(--papel);
+    padding: 14px;
+    margin: 0;
+    max-height: 280px;
+    overflow: auto;
+  }
+  .form__retorno :global(.acoes) {
+    margin-top: 4px;
+  }
+
+  /* ——— Lateral ——— */
+  .lateral {
+    display: grid;
+    gap: 20px;
+    padding: 26px 22px;
+    border-radius: var(--raio);
+    background: var(--papel-2);
+  }
+  .depois {
+    display: grid;
+  }
+  .depois li {
+    display: grid;
+    grid-template-columns: 2.6em 1fr;
+    gap: 8px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--linha);
+    color: var(--tinta-2);
+  }
+  .depois .t-rotulo {
+    padding-top: 0.3em;
+  }
+  .lateral__contato {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .lateral__linha {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .lateral__linha :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+</style>
+
+<script>
+  import { iniciarFormulario } from '../scripts/formulario';
+  iniciarFormulario(document.querySelector<HTMLFormElement>('[data-form]')!);
+</script>

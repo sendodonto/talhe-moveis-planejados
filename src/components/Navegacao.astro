@@ -1,0 +1,375 @@
+---
+import { u, semBase } from '../lib/url';
+// Cabeçalho (desktop: fixo no topo) e barra de ação inferior (celular: ao alcance
+// do polegar, com Menu e Pedir orçamento). O menu do celular abre como painel inferior.
+import Marca from './Marca.astro';
+import Icone from './Icone.astro';
+import { empresa, temWhatsapp, linkWhatsapp } from '../config/empresa';
+
+interface Props {
+  /** Página com foto no topo: cabeçalho transparente sobre a imagem. */
+  sobreFoto?: boolean;
+}
+const { sobreFoto = false } = Astro.props;
+
+const links = [
+  { href: '/projetos', rotulo: 'Ambientes' },
+  { href: '/projetos/cozinha-em-u', rotulo: 'Cozinha em 3D' },
+  { href: '/sobre', rotulo: 'Como trabalhamos' },
+  { href: '/orcamento', rotulo: 'Orçamento' },
+];
+const atual = semBase(Astro.url.pathname).replace(/\/$/, '') || '/';
+const ativo = (href: string) => (href === '/projetos' ? atual === '/projetos' : atual.startsWith(href));
+const naPaginaOrcamento = atual.startsWith('/orcamento');
+---
+
+<header class:list={['topo', { 'topo--foto sobre-foto': sobreFoto }]} data-topo data-sobre-foto={sobreFoto ? '' : undefined}>
+  <div class="faixa topo__faixa">
+    <a href={u('/')} class="topo__marca" aria-label={`${empresa.nome} — página inicial`}><Marca /></a>
+    <nav class="topo__nav" aria-label="Principal">
+      <ul role="list">
+        {
+          links.slice(0, 3).map((l) => (
+            <li>
+              <a href={u(l.href)} aria-current={ativo(l.href) ? 'page' : undefined}>
+                {l.rotulo}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href={u('/orcamento')} class="botao topo__cta" aria-current={naPaginaOrcamento ? 'page' : undefined}>
+        Pedir orçamento <Icone nome="seta" />
+      </a>
+    </nav>
+  </div>
+</header>
+
+<div class:list={['barra', { 'barra--so-menu': naPaginaOrcamento && !temWhatsapp }]} data-barra>
+  <button type="button" class="barra__menu" data-abrir-menu aria-haspopup="dialog" aria-controls="menu-celular">
+    <Icone nome="menu" />
+    <span>Menu</span>
+  </button>
+  {
+    naPaginaOrcamento ? (
+      temWhatsapp ? (
+        <a class="botao botao--whats barra__cta" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener">
+          <Icone nome="whatsapp" /> WhatsApp
+        </a>
+      ) : null
+    ) : (
+      <a class="botao barra__cta" href={u('/orcamento')}>
+        Pedir orçamento <Icone nome="seta" />
+      </a>
+    )
+  }
+</div>
+
+<dialog class="menu" id="menu-celular" aria-label="Menu" data-menu>
+  <div class="menu__corpo">
+    <nav aria-label="Menu do celular">
+      <ol role="list" class="menu__lista">
+        <li>
+          <a href={u('/')} aria-current={atual === '/' ? 'page' : undefined}>Início</a>
+        </li>
+        {
+          links.map((l) => (
+            <li>
+              <a href={u(l.href)} aria-current={ativo(l.href) ? 'page' : undefined}>
+                {l.rotulo}
+                <Icone nome="seta" />
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    {
+      (temWhatsapp || empresa.contato.telefone || empresa.contato.email) && (
+        <div class="menu__contato">
+          {temWhatsapp && (
+            <a class="botao botao--whats botao--bloco" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener">
+              <Icone nome="whatsapp" /> Conversar pelo WhatsApp
+            </a>
+          )}
+          {empresa.contato.telefone && (
+            <a class="menu__linha" href={`tel:${empresa.contato.telefone.replace(/\D/g, '')}`}>
+              <Icone nome="telefone" /> {empresa.contato.telefone}
+            </a>
+          )}
+          {empresa.contato.email && (
+            <a class="menu__linha" href={`mailto:${empresa.contato.email}`}>
+              <Icone nome="email" /> {empresa.contato.email}
+            </a>
+          )}
+        </div>
+      )
+    }
+    <form method="dialog" class="menu__fechar">
+      <button type="submit" class="botao botao--linha botao--bloco"><Icone nome="fechar" /> Fechar</button>
+    </form>
+  </div>
+</dialog>
+
+<style>
+  /* ——— Topo ——— */
+  .topo {
+    position: relative;
+    z-index: 40;
+  }
+  .topo__faixa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+  }
+  .topo__marca {
+    display: inline-flex;
+    padding-block: 14px;
+    text-decoration: none;
+  }
+  .topo__nav {
+    display: none;
+  }
+  /* Sobre a foto: texto claro, sem fundo, dentro da moldura do herói */
+  .topo--foto {
+    position: absolute;
+    top: var(--moldura);
+    left: var(--moldura);
+    right: var(--moldura);
+    color: var(--creme);
+  }
+  @media (min-width: 1024px) {
+    .topo {
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--papel) 92%, transparent);
+      backdrop-filter: saturate(1.2) blur(12px);
+      transition: background-color 0.4s var(--ease), color 0.4s var(--ease), box-shadow 0.4s var(--ease), border-radius 0.4s var(--ease);
+    }
+    .topo.rolou {
+      box-shadow: 0 1px 0 var(--linha);
+    }
+    .topo--foto {
+      position: fixed;
+      background: transparent;
+      backdrop-filter: none;
+      border-radius: var(--raio-g) var(--raio-g) 0 0;
+    }
+    .topo--foto.solido {
+      top: 0;
+      left: 0;
+      right: 0;
+      border-radius: 0;
+      background: color-mix(in srgb, var(--papel) 92%, transparent);
+      backdrop-filter: saturate(1.2) blur(12px);
+      color: var(--tinta);
+      box-shadow: 0 1px 0 var(--linha);
+    }
+    .topo__faixa {
+      min-height: var(--topo);
+    }
+    .topo__nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(20px, 3vw, 48px);
+    }
+    .topo__nav ul {
+      display: flex;
+      gap: clamp(18px, 2.6vw, 40px);
+    }
+    .topo__nav ul a {
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding-block: 8px;
+      background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+      transition: background-size 0.35s var(--ease);
+    }
+    .topo__nav ul a:hover,
+    .topo__nav ul a[aria-current='page'] {
+      background-size: 100% 1px;
+    }
+    .topo__cta {
+      min-height: 44px;
+      padding-inline: 20px;
+    }
+    .topo--foto:not(.solido) .topo__cta {
+      --b-fundo: var(--creme);
+      --b-texto: var(--tinta);
+    }
+  }
+
+  /* ——— Barra inferior (celular) ——— */
+  .barra {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    padding: 8px var(--margem) calc(8px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--papel) 94%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 -1px 0 var(--linha), 0 -8px 24px rgb(43 34 28 / 0.06);
+    transition: transform 0.4s var(--ease);
+  }
+  .barra--so-menu {
+    grid-template-columns: 1fr;
+  }
+  .barra.escondida {
+    transform: translateY(calc(100% + 2px));
+  }
+  .barra__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0 18px 0 14px;
+    background: none;
+    border: 1px solid var(--linha-forte);
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .barra__menu svg {
+    width: 22px;
+    height: 22px;
+  }
+  .barra__cta {
+    min-height: 48px;
+  }
+  @media (min-width: 1024px) {
+    .barra {
+      display: none;
+    }
+  }
+
+  /* ——— Menu (painel inferior) ——— */
+  .menu {
+    margin: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: min(88svh, 720px);
+    padding: 0;
+    border: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    border-radius: var(--raio-g) var(--raio-g) 0 0;
+    overscroll-behavior: contain;
+  }
+  .menu::backdrop {
+    background: rgb(35 28 23 / 0.5);
+  }
+  .menu[open] {
+    animation: sobe 0.45s var(--ease);
+  }
+  @keyframes sobe {
+    from {
+      transform: translateY(32px);
+      opacity: 0;
+    }
+  }
+  .menu__corpo {
+    padding: 26px var(--margem) calc(16px + env(safe-area-inset-bottom));
+    display: grid;
+    gap: 22px;
+  }
+  .menu__lista {
+    border-top: 1px solid var(--linha);
+  }
+  .menu__lista a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--linha);
+    text-decoration: none;
+    font-family: var(--f-serif);
+    font-size: 1.35rem;
+    line-height: 1.15;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .menu__lista a :global(svg) {
+    width: 20px;
+    height: 20px;
+    flex: none;
+  }
+  .menu__lista a[aria-current='page'] {
+    color: var(--madeira);
+  }
+  .menu__contato {
+    display: grid;
+    gap: 6px;
+  }
+  .menu__linha {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .menu__linha :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+  .menu__fechar .botao {
+    min-height: 52px;
+  }
+</style>
+
+<script>
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]')!;
+  const abrir = document.querySelector<HTMLButtonElement>('[data-abrir-menu]')!;
+  abrir.addEventListener('click', () => {
+    menu.showModal();
+    abrir.setAttribute('aria-expanded', 'true');
+  });
+  menu.addEventListener('close', () => abrir.setAttribute('aria-expanded', 'false'));
+  // Toque fora do painel fecha
+  menu.addEventListener('click', (e) => {
+    if (e.target === menu) menu.close();
+  });
+  // Links internos fecham o menu antes de navegar (volta do histórico fica limpa)
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.close()));
+
+  // Barra inferior: some ao rolar para baixo, volta ao subir ou perto do fim.
+  const barra = document.querySelector<HTMLElement>('[data-barra]')!;
+  const topo = document.querySelector<HTMLElement>('[data-topo]')!;
+  let y0 = scrollY;
+  let pedido = false;
+  addEventListener(
+    'scroll',
+    () => {
+      if (pedido) return;
+      pedido = true;
+      requestAnimationFrame(() => {
+        const y = scrollY;
+        const fim = innerHeight + y >= document.documentElement.scrollHeight - 80;
+        const d = y - y0;
+        if (Math.abs(d) > 6) {
+          barra.classList.toggle('escondida', d > 0 && y > 240 && !fim);
+          y0 = y;
+        }
+        if (fim) barra.classList.remove('escondida');
+        topo.classList.toggle('rolou', y > 8);
+        if (topo.hasAttribute('data-sobre-foto')) {
+          const heroi = document.querySelector<HTMLElement>('[data-heroi]');
+          const limite = heroi ? heroi.offsetTop + heroi.offsetHeight - 90 : 400;
+          topo.classList.toggle('solido', y > limite);
+        }
+        pedido = false;
+      });
+    },
+    { passive: true },
+  );
+  // Campo com foco (teclado virtual aberto): a barra sai do caminho.
+  document.addEventListener('focusin', (e) => {
+    const t = e.target as HTMLElement;
+    if (t.matches('input, textarea, select')) barra.classList.add('escondida');
+  });
+</script>

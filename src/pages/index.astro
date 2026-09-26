@@ -1,0 +1,528 @@
+---
+import { u } from '../lib/url';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Icone from '../components/Icone.astro';
+import CardAmbiente from '../components/CardAmbiente.astro';
+import { empresa } from '../config/empresa';
+import { ambientes } from '../content/ambientes';
+import { creditoDe } from '../content/ambientes';
+import heroi from '../assets/fotos/closet-2.jpg';
+import cozinha3d from '../assets/renders/banner-cozinha.png';
+import maos from '../assets/fotos/oficina-maos.jpg';
+import gaveta from '../assets/fotos/servico-gaveta.jpg';
+import armario from '../assets/fotos/dormitorio-2.jpg';
+
+const credHeroi = creditoDe('closet-2');
+// Imagem de compartilhamento: a própria foto do herói
+const og = heroi;
+
+const garantias = [
+  { icone: 'trena', titulo: 'Sob medida', texto: 'Projeto feito para a sua planta' },
+  { icone: 'chave', titulo: 'Qualquer ambiente', texto: 'Da cozinha ao lavabo' },
+  { icone: 'formulario', titulo: 'Orçamento on-line', texto: 'Formulário em poucos minutos' },
+  { icone: 'local', titulo: 'Atendimento', texto: empresa.regiaoAtendimento },
+] as const;
+---
+
+<Base titulo={empresa.nome} heroi imagem={og} imagemAlt="Closet planejado em tons de taupe com prateleiras iluminadas por LED.">
+  <!-- ——— Herói ——— -->
+  <section class="heroi" data-heroi aria-labelledby="heroi-titulo">
+    <div class="heroi__moldura">
+      <Picture
+        src={heroi}
+        alt=""
+        class="heroi__foto"
+        widths={[640, 960, 1400, 1920, 2400]}
+        sizes="100vw"
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="heroi__veu" aria-hidden="true"></div>
+      <div class="heroi__conteudo">
+        <h1 id="heroi-titulo" class="heroi__nome">
+          <span class="sr">{empresa.nome}: móveis planejados sob medida</span>
+          <span aria-hidden="true" class="heroi__letras">{empresa.nome}</span>
+        </h1>
+        <p class="heroi__frase">Cada milímetro pensado para a sua casa</p>
+        <a href={u('/orcamento')} class="botao botao--creme heroi__cta">Pedir orçamento <Icone nome="seta" /></a>
+      </div>
+      {
+        credHeroi && (
+          <p class="heroi__credito">
+            Imagem de referência · <a href={credHeroi.pagina} target="_blank" rel="noopener">{credHeroi.autor} / Unsplash</a>
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- ——— Garantias do processo ——— -->
+  <section class="faixa garantias" aria-label="Como atendemos">
+    <ul role="list">
+      {
+        garantias.map((g) => (
+          <li>
+            <span class="garantias__icone">
+              <Icone nome={g.icone} />
+            </span>
+            <span>
+              <strong>{g.titulo}</strong>
+              <span>{g.texto}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ——— Apresentação + ambientes ——— -->
+  <section class="faixa ambientes secao" aria-labelledby="ambientes-titulo">
+    <div class="ambientes__intro">
+      <h2 class="t-titulo" id="ambientes-titulo">Móveis sob medida para <em>cada canto da casa</em></h2>
+      <div class="ambientes__texto">
+        <p class="t-lead">
+          Parede fora de esquadro, viga no meio do caminho, tomada no lugar errado: tudo isso entra no projeto antes do primeiro corte.
+        </p>
+        <p class="t-texto">
+          O resultado são armários que fecham rente ao teto, gavetas onde você realmente precisa delas e espaço para o que você guarda — não para o que
+          um catálogo imaginou.
+        </p>
+      </div>
+    </div>
+
+    <ul role="list" class="ambientes__grade">
+      {
+        ambientes.map((a, i) => (
+          <li>
+            <CardAmbiente ambiente={a} prioridade={i < 2} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- ——— Cozinha 3D ——— -->
+  <section class="faixa banner" aria-labelledby="banner-titulo">
+    <a class="banner__corpo" href={u('/projetos/cozinha-em-u')}>
+      <div class="banner__texto">
+        <h2 class="t-display" id="banner-titulo">Veja sua cozinha <em>antes de ela existir</em></h2>
+        <p class="t-lead">Gire, aproxime e abra cada detalhe de uma cozinha em U em 3D. É assim que você aprova o seu projeto: vendo, não imaginando.</p>
+        <span class="botao">Explorar a cozinha em 3D <Icone nome="girar" /></span>
+      </div>
+      <div class="banner__imagem">
+        <Picture
+          src={cozinha3d}
+          alt="Cozinha em U em 3D com armários grafite, faixa de madeira com LED, bancada de granito preto e península ripada."
+          widths={[600, 960, 1400]}
+          sizes="(min-width: 1024px) 55vw, 100vw"
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+        />
+        <span class="selo-imagem banner__selo">Estudo 3D</span>
+      </div>
+    </a>
+  </section>
+
+  <!-- ——— Como trabalhamos ——— -->
+  <section class="faixa servicos secao" aria-labelledby="servicos-titulo">
+    <div class="servicos__cabeca">
+      <h2 class="t-titulo" id="servicos-titulo">Do primeiro contato <em>à última dobradiça</em></h2>
+      <p class="t-texto">Uma equipe cuida de tudo. Você não precisa coordenar marceneiro, projetista e montador — só aprovar.</p>
+    </div>
+    <div class="servicos__grade">
+      <figure class="servicos__foto revela">
+        <Picture src={maos} alt="Mãos marcando uma peça de madeira com lápis." widths={[480, 800]} sizes="(min-width: 900px) 30vw, 50vw" formats={['avif', 'webp']} fallbackFormat="webp" />
+      </figure>
+      <div class="servicos__card revela">
+        <Icone nome="trena" class="servicos__icone" />
+        <h3 class="t-sub">Medição no local</h3>
+        <p>O projeto parte das medidas reais do seu imóvel, tiradas no lugar. Parede torta e viga no caminho entram no desenho, não viram surpresa na montagem.</p>
+      </div>
+      <figure class="servicos__foto revela">
+        <Picture src={gaveta} alt="Gaveta de madeira aberta com divisórias sob medida para talheres e utensílios." widths={[480, 800]} sizes="(min-width: 900px) 30vw, 50vw" formats={['avif', 'webp']} fallbackFormat="webp" />
+      </figure>
+      <div class="servicos__card revela">
+        <Icone nome="cubo" class="servicos__icone" />
+        <h3 class="t-sub">Projeto em 3D</h3>
+        <p>Você vê o ambiente em 3D antes da produção. O que não convencer, muda na tela — não na obra.</p>
+      </div>
+      <figure class="servicos__foto revela">
+        <Picture src={armario} alt="Guarda-roupa de madeira clara em um quarto iluminado." widths={[480, 800]} sizes="(min-width: 900px) 30vw, 50vw" formats={['avif', 'webp']} fallbackFormat="webp" />
+      </figure>
+      <div class="servicos__card revela">
+        <Icone nome="serra" class="servicos__icone" />
+        <h3 class="t-sub">Produção e montagem</h3>
+        <p>Quem mediu e desenhou também produz e monta. Você fala com uma empresa só, do primeiro contato à entrega.</p>
+      </div>
+    </div>
+    <div class="servicos__rodape">
+      <a class="link-seta" href={u('/sobre#processo')}>Ver as etapas em detalhe <Icone nome="seta" /></a>
+      <p class="t-nota">Fotos desta seção: referências do Unsplash.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ——— Herói ——— */
+  .heroi {
+    padding: var(--moldura);
+    padding-bottom: 0;
+  }
+  .heroi__moldura {
+    position: relative;
+    min-height: min(88svh, 900px);
+    border-radius: var(--raio-g);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+    background: #4a3d33;
+  }
+  .heroi__moldura :global(.heroi__foto),
+  .heroi__moldura :global(picture) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+  }
+  .heroi__moldura :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 58% 50%;
+  }
+  .heroi__veu {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgb(35 28 23 / 0.5) 0%, rgb(35 28 23 / 0.12) 30%, rgb(35 28 23 / 0.2) 60%, rgb(35 28 23 / 0.62) 100%),
+      radial-gradient(ellipse 70% 45% at 50% 50%, rgb(35 28 23 / 0.28), transparent 70%);
+  }
+  .heroi__conteudo {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: clamp(14px, 2vw, 26px);
+    color: var(--creme);
+    padding: 96px var(--margem) 88px;
+    width: 100%;
+  }
+  .heroi__nome {
+    margin: 0;
+    font-weight: 400;
+  }
+  .heroi__letras {
+    display: block;
+    font-family: var(--f-serif);
+    font-optical-sizing: none;
+    font-variation-settings: 'opsz' 36;
+    font-weight: 520;
+    font-size: clamp(4.2rem, 1rem + 17vw, 15rem);
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+    margin-right: -0.04em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 30px rgb(35 28 23 / 0.35);
+  }
+  .heroi__frase {
+    font-size: clamp(0.78rem, 0.7rem + 0.35vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 12px rgb(35 28 23 / 0.5);
+    max-width: 30ch;
+    text-wrap: balance;
+    line-height: 1.6;
+  }
+  .heroi__cta {
+    margin-top: 6px;
+  }
+  @media (max-width: 599px) {
+    .heroi__letras {
+      font-size: calc(1rem + 21vw);
+      letter-spacing: 0.02em;
+      margin-right: -0.02em;
+    }
+  }
+  .heroi__credito {
+    position: absolute;
+    right: 18px;
+    bottom: 14px;
+    font-size: 0.72rem;
+    color: rgb(245 237 226 / 0.9);
+  }
+  .heroi__credito a {
+    color: inherit;
+    display: inline-block;
+    padding-block: 6px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .heroi__letras {
+      animation: nome 1.8s var(--ease) both;
+    }
+    .heroi__frase,
+    .heroi__cta {
+      animation: surge 1.2s 0.5s var(--ease) both;
+    }
+  }
+  @keyframes nome {
+    from {
+      letter-spacing: 0.22em;
+      margin-right: -0.22em;
+      filter: blur(10px);
+      opacity: 0.2;
+    }
+  }
+  @keyframes surge {
+    from {
+      opacity: 0.2;
+      transform: translateY(10px);
+    }
+  }
+  @media (min-width: 1024px) {
+    .heroi__moldura {
+      min-height: calc(100svh - var(--moldura) * 2);
+      max-height: 980px;
+    }
+    .heroi__conteudo {
+      padding-top: 120px;
+    }
+  }
+
+  /* ——— Garantias ——— */
+  .garantias {
+    padding-block: 28px;
+  }
+  .garantias ul {
+    display: grid;
+    gap: 14px;
+  }
+  .garantias li {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+  .garantias strong {
+    display: block;
+    font-weight: 600;
+  }
+  .garantias li span span {
+    color: var(--tinta-2);
+  }
+  .garantias__icone {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--papel-2);
+    color: var(--madeira);
+  }
+  .garantias__icone :global(svg) {
+    width: 21px;
+    height: 21px;
+  }
+  @media (min-width: 900px) {
+    .garantias {
+      padding-block: 40px;
+    }
+    .garantias ul {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .garantias li {
+      padding-inline: 24px;
+      border-left: 1px solid var(--linha);
+      align-items: center;
+    }
+    .garantias li:first-child {
+      border-left: 0;
+      padding-left: 0;
+    }
+  }
+
+  /* ——— Ambientes ——— */
+  .ambientes {
+    padding-top: clamp(40px, 6vw, 88px);
+  }
+  .ambientes__intro {
+    display: grid;
+    gap: 20px;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .ambientes__texto {
+    display: grid;
+    gap: 14px;
+  }
+  .ambientes__grade {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 12px;
+  }
+  @media (min-width: 900px) {
+    .ambientes__intro {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+    .ambientes__texto {
+      padding-left: clamp(24px, 4vw, 64px);
+      border-left: 1px solid var(--linha-forte);
+    }
+    .ambientes__grade {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px 20px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .ambientes__grade {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+    }
+  }
+
+  /* ——— Banner 3D ——— */
+  .banner__corpo {
+    display: grid;
+    gap: 8px;
+    border-radius: var(--raio-g);
+    background: linear-gradient(120deg, #d9cbb9 0%, #cdbba5 100%);
+    color: var(--tinta);
+    text-decoration: none;
+    overflow: hidden;
+    padding: 32px 22px 0;
+    transition: background-color 0.3s var(--ease);
+  }
+  .banner__texto {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .banner__texto .t-lead {
+    color: #4a3d33;
+  }
+  .banner__texto .t-display {
+    font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.4rem);
+  }
+  .banner__imagem {
+    position: relative;
+    margin-inline: -22px;
+  }
+  .banner__imagem :global(img) {
+    width: 100%;
+    height: auto;
+    transition: transform 1.2s var(--ease);
+    /* o render tem fundo de estúdio próprio: as bordas se dissolvem no banner */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 16%), linear-gradient(180deg, transparent 0%, #000 12%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 16%), linear-gradient(180deg, transparent 0%, #000 12%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  .banner__corpo:hover .banner__imagem :global(img) {
+    transform: scale(1.03) rotate(-0.4deg);
+  }
+  .banner__corpo:hover .botao {
+    --b-fundo: var(--madeira);
+  }
+  .banner__selo {
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+    color: var(--tinta);
+    background: rgb(245 237 226 / 0.75);
+    border-color: transparent;
+  }
+  @media (min-width: 900px) {
+    .banner__corpo {
+      grid-template-columns: 5fr 7fr;
+      align-items: center;
+      padding: 0 0 0 clamp(32px, 5vw, 80px);
+      min-height: 460px;
+    }
+    .banner__texto {
+      padding-block: 56px;
+    }
+    .banner__imagem {
+      margin: 0;
+      align-self: end;
+    }
+  }
+
+  /* ——— Serviços: fotos e cartões alternados ——— */
+  .servicos__cabeca {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+    text-align: center;
+    margin-bottom: clamp(32px, 5vw, 56px);
+  }
+  .servicos__cabeca .t-titulo {
+    max-width: 20ch;
+  }
+  .servicos__grade {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .servicos__foto {
+    border-radius: var(--raio);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--papel-2);
+  }
+  .servicos__foto :global(picture),
+  .servicos__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .servicos__card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 24px 22px 26px;
+    border-radius: var(--raio);
+    background: var(--creme);
+    box-shadow: 0 1px 2px rgb(43 34 28 / 0.06), 0 12px 32px -18px rgb(43 34 28 / 0.25);
+    grid-column: 1 / -1;
+  }
+  .servicos__card p {
+    color: var(--tinta-2);
+    font-size: 0.98rem;
+  }
+
+  .servicos__card :global(.servicos__icone) {
+    width: 30px;
+    height: 30px;
+    color: var(--madeira);
+  }
+  .servicos__rodape {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    text-align: center;
+  }
+  @media (min-width: 900px) {
+    .servicos__grade {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .servicos__card {
+      grid-column: auto;
+      padding: 32px 30px;
+      align-self: start;
+    }
+    .servicos__foto {
+      aspect-ratio: 5 / 4;
+    }
+  }
+</style>

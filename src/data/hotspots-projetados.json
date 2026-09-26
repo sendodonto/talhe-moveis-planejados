@@ -1,0 +1,326 @@
+{
+  "maquete": {
+    "largura": 1781,
+    "altura": 1796,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 0.6813,
+        "y": 0.1678,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.6301,
+        "y": 0.211,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 0.7056,
+        "y": 0.3877,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 0.7029,
+        "y": 0.6281,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": 0.4107,
+        "y": 0.3781,
+        "visivel": true
+      }
+    ]
+  },
+  "detalhe-bancada": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 0.9353,
+        "y": -1.7467,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.5578,
+        "y": -0.5522,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 0.9942,
+        "y": 0.7427,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 6.8492,
+        "y": -15.4148,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": -0.9882,
+        "y": 0.4013,
+        "visivel": false
+      }
+    ]
+  },
+  "detalhe-ripado": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 1.1331,
+        "y": -0.552,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.9947,
+        "y": -0.2519,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 1.1793,
+        "y": 0.1589,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 0.772,
+        "y": 0.5012,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": 0.2846,
+        "y": 0.1428,
+        "visivel": true
+      }
+    ]
+  },
+  "detalhe-led": {
+    "largura": 1500,
+    "altura": 1000,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 1.0575,
+        "y": -0.618,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.6606,
+        "y": 0.125,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 1.1955,
+        "y": 1.3589,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": -1.8959,
+        "y": -3.3979,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": -0.7344,
+        "y": 1.851,
+        "visivel": false
+      }
+    ]
+  },
+  "detalhe-armarios": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 0.4058,
+        "y": 0.3388,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.0535,
+        "y": 0.648,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 0.6009,
+        "y": 1.28,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 4.3504,
+        "y": 3.8116,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": -1.86,
+        "y": 2.2042,
+        "visivel": false
+      }
+    ]
+  },
+  "detalhe-cuba": {
+    "largura": 1500,
+    "altura": 1000,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": -2.1055,
+        "y": 2.0398,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 7.2016,
+        "y": -2.0451,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 6.9784,
+        "y": 8.2479,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 1.2251,
+        "y": -4.7563,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": 0.4471,
+        "y": 0.5742,
+        "visivel": true
+      }
+    ]
+  },
+  "vista-inicial": {
+    "largura": 1600,
+    "altura": 900,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 0.4384,
+        "y": 0.2315,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.4098,
+        "y": 0.2986,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 0.4529,
+        "y": 0.4703,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 0.4589,
+        "y": 0.6729,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": 0.2886,
+        "y": 0.4622,
+        "visivel": true
+      }
+    ]
+  },
+  "vista-inicial-retrato": {
+    "largura": 800,
+    "altura": 1000,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 0.6528,
+        "y": 0.2088,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.5821,
+        "y": 0.2864,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 0.6846,
+        "y": 0.4683,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 0.7182,
+        "y": 0.7024,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": 0.2958,
+        "y": 0.4598,
+        "visivel": true
+      }
+    ]
+  },
+  "banner-cozinha": {
+    "largura": 1400,
+    "altura": 1000,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Armarios",
+        "x": 0.5844,
+        "y": 0.2183,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.5463,
+        "y": 0.2892,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Bancada",
+        "x": 0.6036,
+        "y": 0.4689,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Peninsula",
+        "x": 0.6128,
+        "y": 0.6832,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cuba",
+        "x": 0.3852,
+        "y": 0.4605,
+        "visivel": true
+      }
+    ]
+  }
+}

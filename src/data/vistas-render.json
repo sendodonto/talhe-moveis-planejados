@@ -1,0 +1,124 @@
+[
+ {
+  "id": "maquete",
+  "w": 2000,
+  "h": 2000,
+  "fov": 26,
+  "alvo": [
+   0.05,
+   1.1,
+   0.35
+  ],
+  "az": 0.62,
+  "polar": 0.98,
+  "dist": 14.5,
+  "recortar": 0.015
+ },
+ {
+  "id": "detalhe-bancada",
+  "w": 1200,
+  "h": 1500,
+  "fov": 34,
+  "alvo": [
+   -0.15,
+   0.92,
+   -1.05
+  ],
+  "az": 0.95,
+  "polar": 1.12,
+  "dist": 1.75
+ },
+ {
+  "id": "detalhe-ripado",
+  "w": 1200,
+  "h": 1500,
+  "fov": 34,
+  "alvo": [
+   1.4,
+   0.55,
+   0.9
+  ],
+  "az": 1.05,
+  "polar": 1.35,
+  "dist": 1.9
+ },
+ {
+  "id": "detalhe-led",
+  "w": 1500,
+  "h": 1000,
+  "fov": 34,
+  "alvo": [
+   -0.5,
+   1.55,
+   -1.1
+  ],
+  "az": 0.35,
+  "polar": 1.42,
+  "dist": 1.55
+ },
+ {
+  "id": "detalhe-armarios",
+  "w": 1200,
+  "h": 1500,
+  "fov": 40,
+  "alvo": [
+   0.3,
+   2.15,
+   -1.25
+  ],
+  "az": -0.15,
+  "polar": 1.62,
+  "dist": 2.4
+ },
+ {
+  "id": "detalhe-cuba",
+  "w": 1500,
+  "h": 1000,
+  "fov": 34,
+  "alvo": [
+   -1.2,
+   0.98,
+   -0.1
+  ],
+  "az": 1.45,
+  "polar": 0.95,
+  "dist": 1.35
+ },
+ {
+  "id": "vista-inicial",
+  "w": 1600,
+  "h": 900,
+  "preset": "inicial",
+  "alvo": [
+   0,
+   0,
+   0
+  ],
+  "fov": 40,
+  "desloc": 0.25
+ },
+ {
+  "id": "vista-inicial-retrato",
+  "w": 800,
+  "h": 1000,
+  "preset": "inicial",
+  "alvo": [
+   0,
+   0,
+   0
+  ],
+  "fov": 50
+ },
+ {
+  "id": "banner-cozinha",
+  "w": 1400,
+  "h": 1000,
+  "preset": "inicial",
+  "alvo": [
+   0,
+   0,
+   0
+  ],
+  "fov": 40
+ }
+]

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+verificacao/
+.impeccable/review/
+.impeccable/build/
+# modelo original (12 MB). O site usa a cópia otimizada em public/modelos/.
+cozinha_planejada.glb

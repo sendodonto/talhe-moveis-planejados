@@ -1,0 +1,181 @@
+---
+import { u } from '../lib/url';
+import Marca from './Marca.astro';
+import Icone from './Icone.astro';
+import { empresa, temWhatsapp, linkWhatsapp } from '../config/empresa';
+
+interface Props {
+  /** Esconde a faixa de chamada (usado na própria página de orçamento). */
+  semChamada?: boolean;
+}
+const { semChamada = false } = Astro.props;
+const c = empresa.contato;
+const ano = new Date().getFullYear();
+---
+
+<footer class="rodape">
+  {
+    !semChamada && (
+      <section class="chamada" aria-labelledby="chamada-titulo">
+        <div class="faixa chamada__corpo">
+          <h2 class="t-titulo" id="chamada-titulo">
+            Sua casa tem medidas únicas. <em>Seus móveis também deveriam ter.</em>
+          </h2>
+          <p class="t-lead">Conte qual ambiente quer transformar. Em poucos minutos você nos passa o essencial; nós voltamos com os próximos passos.</p>
+          <div class="acoes chamada__acoes">
+            <a class="botao" href={u('/orcamento')}>
+              Pedir meu orçamento <Icone nome="seta" />
+            </a>
+            {temWhatsapp && (
+              <a class="botao botao--whats" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome} e quero um orçamento.`)} target="_blank" rel="noopener">
+                <Icone nome="whatsapp" /> Chamar no WhatsApp
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <div class="base">
+    <div class="faixa base__corpo">
+      <a href={u('/')} class="base__marca" aria-label={`${empresa.nome} — página inicial`}><Marca /></a>
+
+      <nav aria-label="Rodapé" class="base__nav">
+        <a href={u('/projetos')}>Ambientes</a>
+        <a href={u('/projetos/cozinha-em-u')}>Cozinha 3D</a>
+        <a href={u('/sobre')}>Como trabalhamos</a>
+        <a href={u('/orcamento')}>Orçamento</a>
+      </nav>
+
+      <ul role="list" class="base__contato">
+        {c.telefone && (
+          <li>
+            <a href={`tel:${c.telefone.replace(/\D/g, '')}`}><Icone nome="telefone" />{c.telefone}</a>
+          </li>
+        )}
+        {c.email && (
+          <li>
+            <a href={`mailto:${c.email}`}><Icone nome="email" />{c.email}</a>
+          </li>
+        )}
+        {temWhatsapp && (
+          <li>
+            <a href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener"><Icone nome="whatsapp" />WhatsApp</a>
+          </li>
+        )}
+        <li><span><Icone nome="local" />{empresa.endereco || empresa.regiaoAtendimento}</span></li>
+        {empresa.horario && (
+          <li>
+            <span><Icone nome="relogio" />{empresa.horario}</span>
+          </li>
+        )}
+        {c.instagram && (
+          <li>
+            <a href={`https://instagram.com/${c.instagram}`} target="_blank" rel="noopener" aria-label={`Instagram @${c.instagram}`}><Icone nome="instagram" />@{c.instagram}</a>
+          </li>
+        )}
+      </ul>
+
+      <div class="base__legal t-nota">
+        <span>© {ano} {empresa.nomeCompleto}{empresa.cnpj && ` · CNPJ ${empresa.cnpj}`}</span>
+        <span>Fotos de ambientes: referências do Unsplash, com crédito em cada imagem. Cozinha: estudo 3D.</span>
+        <a href={u('/privacidade')}>Privacidade</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .chamada {
+    background: var(--papel-2);
+    padding-block: clamp(56px, 8vw, 112px);
+    text-align: center;
+  }
+  .chamada__corpo {
+    display: grid;
+    justify-items: center;
+    gap: 20px;
+  }
+  .chamada h2 {
+    max-width: 22ch;
+  }
+  .chamada .t-lead {
+    max-width: 52ch;
+  }
+  .chamada__acoes {
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .base {
+    background: var(--grafite);
+    color: var(--sobre-grafite);
+    padding-block: 36px 28px;
+  }
+  .base__corpo {
+    display: grid;
+    gap: 24px;
+  }
+  .base__marca {
+    text-decoration: none;
+    width: fit-content;
+    padding-block: 8px;
+  }
+  .base__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+  }
+  .base__nav a,
+  .base__contato a,
+  .base__contato span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    text-decoration: none;
+  }
+  .base__nav a:hover,
+  .base__contato a:hover {
+    color: var(--led);
+  }
+  .base__contato {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 28px;
+    color: var(--sobre-grafite-2);
+    padding-block: 8px;
+    border-block: 1px solid #43372d;
+  }
+  .base__contato :global(svg) {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .base__legal {
+    color: var(--sobre-grafite-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 24px;
+    justify-content: space-between;
+  }
+  .base__legal a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .base__corpo {
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
+    .base__nav {
+      justify-content: flex-end;
+    }
+    .base__contato,
+    .base__legal {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

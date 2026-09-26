@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import { empresa } from '../config/empresa';
+const c = empresa.contato;
+---
+
+<Base titulo="Privacidade" descricao={`Como a ${empresa.nome} trata os dados enviados pelo formulário de orçamento.`}>
+  <article class="faixa texto">
+    <h1 class="t-titulo">Como tratamos os seus dados</h1>
+    <!-- VALIDAR COM A EMPRESA / JURÍDICO antes de publicar. -->
+    <p class="t-lead">Texto-base, em linguagem simples. Precisa ser revisado pela empresa antes da publicação.</p>
+
+    <h2 class="t-sub">O que coletamos</h2>
+    <p>No formulário de orçamento: nome, telefone, e-mail (opcional), cidade, ambientes de interesse, momento da obra e a mensagem que você escrever.</p>
+
+    <h2 class="t-sub">Para que usamos</h2>
+    <p>Somente para responder ao seu pedido, agendar a medição e enviar o orçamento. Não vendemos nem compartilhamos esses dados para publicidade.</p>
+
+    <h2 class="t-sub">Onde ficam</h2>
+    <p>
+      Os dados chegam pelo canal que você usar (serviço de formulário, WhatsApp ou e-mail) e ficam guardados apenas pelo tempo necessário para o atendimento
+      e para obrigações legais.
+    </p>
+
+    <h2 class="t-sub">Seus direitos</h2>
+    <p>
+      Pela Lei Geral de Proteção de Dados (Lei 13.709/2018), você pode pedir acesso, correção ou exclusão dos seus dados a qualquer momento{c.email ? ':' : '.'}
+      {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
+    </p>
+
+    <h2 class="t-sub">Este site</h2>
+    <p>O site não usa cookies de rastreamento nem ferramentas de publicidade. O visualizador 3D guarda no seu navegador apenas se você já viu as instruções de uso.</p>
+  </article>
+</Base>
+
+<style>
+  .texto {
+    max-width: 780px;
+    display: grid;
+    gap: 16px;
+    padding-block: clamp(24px, 5vw, 64px) clamp(64px, 9vw, 120px);
+  }
+  .texto h2 {
+    margin-top: 20px;
+  }
+  .texto p:not(.t-rotulo):not(.t-lead) {
+    color: var(--tinta-2);
+  }
+</style>

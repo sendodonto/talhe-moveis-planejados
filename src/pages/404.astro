@@ -1,0 +1,27 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icone from '../components/Icone.astro';
+---
+
+<Base titulo="Página não encontrada" semIndexar>
+  <section class="faixa nf">
+    <h1 class="t-display">Esta medida <em>não confere.</em></h1>
+    <p class="t-lead">A página que você procurou não existe ou mudou de endereço.</p>
+    <div class="acoes">
+      <a class="botao" href={u('/')}>Ir para o início <Icone nome="seta" /></a>
+      <a class="botao botao--linha" href={u('/projetos')}>Ver ambientes</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    display: grid;
+    gap: 22px;
+    padding-block: clamp(40px, 10vw, 140px);
+  }
+  .nf h1 {
+    max-width: 12ch;
+  }
+</style>

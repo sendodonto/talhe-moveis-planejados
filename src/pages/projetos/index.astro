@@ -1,0 +1,178 @@
+---
+import { u } from '../../lib/url';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Icone from '../../components/Icone.astro';
+import CardAmbiente from '../../components/CardAmbiente.astro';
+import { ambientes, outros, creditoDe } from '../../content/ambientes';
+import { empresa } from '../../config/empresa';
+---
+
+<Base
+  titulo="Ambientes"
+  descricao={`Cozinhas, dormitórios, closets, salas, home office e banheiros planejados sob medida pela ${empresa.nome}.`}
+>
+  <header class="faixa cabeca">
+    <h1 class="t-display">Um projeto para <em>cada ambiente</em></h1>
+    <p class="t-lead">Escolha por onde começar. Em cada ambiente, o que costuma entrar no projeto — e o convite para desenhar o seu.</p>
+  </header>
+
+  <nav class="faixa grade" aria-label="Ambientes">
+    <ul role="list">
+      {
+        ambientes.map((a, i) => (
+          <li>
+            <CardAmbiente ambiente={a} href={`#${a.id}`} prioridade={i < 2} />
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="faixa lista">
+    {
+      ambientes.map((a, i) => {
+        const cred = creditoDe(a.credito);
+        return (
+          <section class:list={['item', { 'item--inverso': i % 2 === 1 }]} id={a.id} aria-labelledby={`${a.id}-titulo`}>
+            <figure class="item__foto revela">
+              <Picture
+                src={a.imagem}
+                alt={a.alt}
+                widths={[480, 800, 1200]}
+                sizes="(min-width: 900px) 45vw, 100vw"
+                formats={['avif', 'webp']}
+                fallbackFormat="webp"
+              />
+              {cred && (
+                <figcaption>
+                  Referência · <a href={cred.pagina} target="_blank" rel="noopener">{cred.autor} / Unsplash</a>
+                </figcaption>
+              )}
+            </figure>
+            <div class="item__texto">
+              <h2 class="t-titulo" id={`${a.id}-titulo`}>
+                {a.nome}
+              </h2>
+              <p class="t-lead">{a.chamada}</p>
+              <p class="t-texto">{a.texto}</p>
+              <ul role="list" class="item__inclui" aria-label={`O que costuma entrar em ${a.nome.toLowerCase()}`}>
+                {a.inclui.map((x) => (
+                  <li>{x}</li>
+                ))}
+              </ul>
+              <div class="acoes">
+                <a class="botao" href={u(`/orcamento?ambiente=${a.id}`)}>
+                  Orçar {a.singular} <Icone nome="seta" />
+                </a>
+                {a.id === 'cozinha' && (
+                  <a class="botao botao--linha" href={u('/projetos/cozinha-em-u')}>
+                    Ver cozinha em 3D
+                  </a>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })
+    }
+    <p class="outros t-texto">{outros} <a href={u('/orcamento')}>Conte o que você precisa.</a></p>
+  </div>
+</Base>
+
+<style>
+  .cabeca {
+    display: grid;
+    gap: 16px;
+    padding-block: clamp(24px, 5vw, 72px) clamp(28px, 4vw, 48px);
+  }
+  .cabeca h1 {
+    max-width: 16ch;
+  }
+  .cabeca .t-lead {
+    max-width: 52ch;
+  }
+  .grade ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 12px;
+  }
+  @media (min-width: 900px) {
+    .grade ul {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px 20px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .grade ul {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+    }
+  }
+
+  .lista {
+    padding-block: clamp(56px, 8vw, 120px) clamp(40px, 6vw, 80px);
+    display: grid;
+    gap: clamp(64px, 9vw, 128px);
+  }
+  .item {
+    display: grid;
+    gap: 24px;
+    scroll-margin-top: calc(var(--topo) + 24px);
+  }
+  .item__foto {
+    display: grid;
+    gap: 8px;
+  }
+  .item__foto :global(picture) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--raio-g);
+    overflow: hidden;
+  }
+  .item__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .item__foto figcaption {
+    font-size: 0.78rem;
+    color: var(--tinta-2);
+  }
+  .item__foto figcaption a {
+    color: inherit;
+    display: inline-block;
+    padding-block: 6px;
+  }
+  .item__texto {
+    display: grid;
+    gap: 16px;
+    align-content: center;
+  }
+  .item__inclui {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-block: 4px 8px;
+  }
+  .item__inclui li {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--papel-2);
+    font-size: 0.92rem;
+    line-height: 1.3;
+  }
+  @media (min-width: 900px) {
+    .item {
+      grid-template-columns: 5fr 6fr;
+      gap: clamp(40px, 6vw, 104px);
+      align-items: center;
+    }
+    .item--inverso .item__foto {
+      order: 2;
+    }
+  }
+  .outros a {
+    font-weight: 600;
+  }
+</style>

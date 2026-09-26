@@ -1,0 +1,72 @@
+{
+  "dormitorio-2": {
+    "id": "LVMi1lJOp7s",
+    "autor": "McFollis",
+    "perfil": "https://unsplash.com/@thisismcfollis",
+    "pagina": "https://unsplash.com/photos/modern-light-wood-wardrobe-in-a-clean-bedroom-interior-LVMi1lJOp7s",
+    "descricao_original": "Modern light wood wardrobe in a clean bedroom interior"
+  },
+  "closet-2": {
+    "id": "22bEhQA7SMo",
+    "autor": "Gabriel Rosenblut",
+    "perfil": "https://unsplash.com/@gabrielrosenblutpp",
+    "pagina": "https://unsplash.com/photos/a-large-walk-in-closet-with-a-wooden-floor-22bEhQA7SMo",
+    "descricao_original": "a large walk in closet with a wooden floor"
+  },
+  "oficina-maos": {
+    "id": "GfYA6q5ESLI",
+    "autor": "Craft Kitties",
+    "perfil": "https://unsplash.com/@craftkitties",
+    "pagina": "https://unsplash.com/photos/person-marking-wooden-board-with-pencil-GfYA6q5ESLI",
+    "descricao_original": "A person marking a line on a wooden board with a pencil"
+  },
+  "cat-cozinha": {
+    "id": "BaKdrhCvn0E",
+    "autor": "Caroline Badran",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/modern-kitchen-with-island-and-bar-stools-BaKdrhCvn0E",
+    "descricao_original": "Modern kitchen with island and bar stools"
+  },
+  "cat-dormitorio": {
+    "id": "Jxam7P99NMA",
+    "autor": "Obegi Home",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/modern-bedroom-with-large-wardrobe-and-vanity-area-fortable-bed-Jxam7P99NMA",
+    "descricao_original": "Modern bedroom with large wardrobe and vanity area fortable bed"
+  },
+  "cat-closet": {
+    "id": "NGNZxH6qBjg",
+    "autor": "Lisa Anna",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/a-walk-in-closet-with-a-lot-of-shoes-NGNZxH6qBjg",
+    "descricao_original": "A walk in closet with a lot of shoes"
+  },
+  "cat-sala": {
+    "id": "aaONSK4BKxc",
+    "autor": "Caroline Badran",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/modern-built-in-shelves-with-artful-decorations-aaONSK4BKxc",
+    "descricao_original": "Modern built-in shelves with artful decorations"
+  },
+  "cat-home-office": {
+    "id": "CkzzjmZbEMA",
+    "autor": "Puscas Adryan",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/modern-home-office-with-built-in-desk-and-storage-CkzzjmZbEMA",
+    "descricao_original": "Modern home office with built-in desk and storage"
+  },
+  "cat-banheiro": {
+    "id": "bZDWpKYCCao",
+    "autor": "Horizon Eye",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/a-bathroom-with-a-toilet-sink-and-mirror-bZDWpKYCCao",
+    "descricao_original": "A bathroom with a toilet, sink and mirror"
+  },
+  "servico-gaveta": {
+    "id": "wT9AAp8RCjA",
+    "autor": "Orgalux",
+    "perfil": "",
+    "pagina": "https://unsplash.com/photos/a-drawer-with-utensils-and-spoons-in-it-wT9AAp8RCjA",
+    "descricao_original": "a drawer with utensils and spoons in it"
+  }
+}

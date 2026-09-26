@@ -1,0 +1,45 @@
+---
+// Ícones: Phosphor Icons (MIT, https://phosphoricons.com), peso "light".
+// Os SVGs são embutidos no HTML durante o build; nenhum JS vai para o navegador.
+const svgs = import.meta.glob('/node_modules/@phosphor-icons/core/assets/light/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+const mapa = {
+  seta: 'arrow-right',
+  menu: 'list',
+  fechar: 'x',
+  whatsapp: 'whatsapp-logo',
+  mais: 'plus',
+  menos: 'minus',
+  inicio: 'arrow-counter-clockwise',
+  expandir: 'corners-out',
+  ajuda: 'question',
+  girar: 'cube-focus',
+  anterior: 'caret-left',
+  proximo: 'caret-right',
+  email: 'envelope-simple',
+  telefone: 'phone',
+  trena: 'ruler',
+  cubo: 'cube',
+  serra: 'hammer',
+  chave: 'wrench',
+  local: 'map-pin',
+  relogio: 'clock',
+  instagram: 'instagram-logo',
+  formulario: 'clipboard-text',
+} as const;
+
+interface Props {
+  nome: keyof typeof mapa;
+  class?: string;
+}
+const { nome, class: classe } = Astro.props;
+const bruto = svgs[`/node_modules/@phosphor-icons/core/assets/light/${mapa[nome]}-light.svg`];
+if (!bruto) throw new Error(`Ícone não encontrado: ${nome}`);
+const svg = bruto.replace('<svg ', `<svg aria-hidden="true" focusable="false"${classe ? ` class="${classe}"` : ''} `);
+---
+
+<Fragment set:html={svg} />

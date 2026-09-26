@@ -1,0 +1,111 @@
+---
+import { u } from '../lib/url';
+import '@fontsource-variable/bodoni-moda/opsz.css';
+import '@fontsource-variable/albert-sans/wght.css';
+import '../styles/global.css';
+import Navegacao from '../components/Navegacao.astro';
+import Rodape from '../components/Rodape.astro';
+import { empresa } from '../config/empresa';
+import { getImage } from 'astro:assets';
+import imagemPadrao from '../assets/renders/maquete.png';
+
+interface Props {
+  titulo: string;
+  descricao?: string;
+  imagem?: ImageMetadata;
+  /** Texto alternativo da imagem de compartilhamento. */
+  imagemAlt?: string;
+  semIndexar?: boolean;
+  /** A página abre com foto em tela cheia (cabeçalho transparente sobre ela). */
+  heroi?: boolean;
+  semChamada?: boolean;
+}
+const {
+  titulo,
+  descricao = empresa.descricao,
+  imagem = imagemPadrao,
+  imagemAlt = 'Maquete 3D de cozinha em U com armários grafite, faixa amadeirada e bancada de granito preto.',
+  semIndexar = false,
+  heroi = false,
+  semChamada = false,
+} = Astro.props;
+
+const tituloCompleto = titulo === empresa.nome ? `${empresa.nome} · Móveis planejados sob medida` : `${titulo} · ${empresa.nome}`;
+const canonica = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site ?? empresa.url).href;
+// Imagem de compartilhamento: 1200×630 em JPEG, sobre o fundo do site (sem transparência).
+const og = await getImage({ src: imagem, width: 1200, height: 630, fit: 'contain', background: '#efe8df', format: 'jpg', quality: 82 });
+const ogUrl = new URL(og.src, Astro.site ?? empresa.url).href;
+
+const c = empresa.contato;
+const dadosEstruturados = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: empresa.nomeCompleto,
+  description: empresa.descricao,
+  url: empresa.url,
+  areaServed: empresa.regiaoAtendimento,
+  address: { '@type': 'PostalAddress', addressLocality: empresa.cidade, addressRegion: empresa.uf, addressCountry: 'BR', ...(empresa.endereco && { streetAddress: empresa.endereco }) },
+  ...(c.telefone && { telephone: c.telefone }),
+  ...(c.email && { email: c.email }),
+  ...(c.instagram && { sameAs: [`https://instagram.com/${c.instagram}`] }),
+};
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonica} />
+    {semIndexar && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#efe8df" />
+    <link rel="icon" href={u('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={u('/sitemap-index.xml')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={empresa.nome} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imagemAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(dadosEstruturados)} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Navegacao sobreFoto={heroi} />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <Rodape semChamada={semChamada} />
+    <script>
+      // Entrada discreta dos blocos marcados com .revela (uma vez só).
+      const io = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (!e.isIntersecting) continue;
+            e.target.classList.add('visivel');
+            io.unobserve(e.target);
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+      );
+      document.querySelectorAll('.revela').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

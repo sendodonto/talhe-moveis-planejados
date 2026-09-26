@@ -1,0 +1,888 @@
+---
+// Visualizador da cozinha: pôster (imagem gerada do próprio GLB) com os pontos
+// projetados nas posições reais + 3D sob demanda + lista acessível de pontos.
+// Sem WebGL ou sem JavaScript, a imagem e os textos continuam explicando a cozinha.
+import { getImage } from 'astro:assets';
+import Icone from './Icone.astro';
+import { u } from '../lib/url';
+import { pontosDaCozinha, projecaoEm, URL_MODELO } from '../lib/hotspots';
+import retrato from '../assets/renders/vista-inicial-retrato.png';
+import paisagem from '../assets/renders/vista-inicial.png';
+
+interface Props {
+  id?: string;
+  /** 'desktop' = carrega sozinho no desktop quando aparece na tela. */
+  auto?: boolean;
+  ctaHref?: string;
+  ctaTexto?: string;
+  tamanhoModelo?: string;
+}
+const {
+  id = 'cozinha3d',
+  auto = false,
+  ctaHref = '/orcamento?ambiente=cozinha&referencia=cozinha-em-u',
+  ctaTexto = 'Quero um projeto parecido',
+  tamanhoModelo = '3 MB',
+} = Astro.props;
+
+const pontos = pontosDaCozinha();
+const noRetrato = new Map(projecaoEm('vista-inicial-retrato').map((p) => [p.no, p]));
+const noPaisagem = new Map(projecaoEm('vista-inicial').map((p) => [p.no, p]));
+
+async function srcset(src: ImageMetadata, larguras: number[], format: 'avif' | 'webp') {
+  const imgs = await Promise.all(larguras.map((w) => getImage({ src, width: w, format, quality: format === 'avif' ? 60 : 78 })));
+  return imgs.map((im, i) => `${im.src} ${larguras[i]}w`).join(', ');
+}
+const MQ = '(min-width: 1024px)';
+const fontes = {
+  pAvif: await srcset(paisagem, [960, 1400, 1600], 'avif'),
+  pWebp: await srcset(paisagem, [960, 1400, 1600], 'webp'),
+  rAvif: await srcset(retrato, [480, 800], 'avif'),
+  rWebp: await srcset(retrato, [480, 800], 'webp'),
+};
+const fallback = await getImage({ src: retrato, width: 800, format: 'webp', quality: 78 });
+
+const dados = {
+  modelo: u(URL_MODELO),
+  pontos: pontos.map(({ no, numero, titulo, vista }) => ({ no, numero, titulo, vista })),
+};
+---
+
+<section class="v3d" data-v3d data-estado="ocioso" data-auto={auto ? 'desktop' : undefined} aria-label="Cozinha em 3D">
+  <script type="application/json" data-v3d-dados set:html={JSON.stringify(dados)} />
+  <div class="v3d__grade">
+    <div class="v3d__palco" data-v3d-palco tabindex="0" role="group" aria-roledescription="visualizador 3D" aria-label="Cozinha em U. Imagem e modelo 3D." aria-describedby={`${id}-teclado`}>
+      <picture class="v3d__poster">
+        <source media={MQ} type="image/avif" srcset={fontes.pAvif} sizes="(min-width: 1440px) 1330px, 94vw" />
+        <source media={MQ} type="image/webp" srcset={fontes.pWebp} sizes="(min-width: 1440px) 1330px, 94vw" />
+        <source type="image/avif" srcset={fontes.rAvif} sizes="100vw" />
+        <img
+          src={fallback.src}
+          srcset={fontes.rWebp}
+          sizes="100vw"
+          width="800"
+          height="1000"
+          alt="Cozinha em U vista da entrada: aéreos grafite até o teto, faixa amadeirada com LED, bancada de granito preto com cuba sob a janela e península com ripado de madeira."
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+
+      <div class="v3d__pontos-estaticos">
+        {
+          pontos.map((p) => {
+            const r = noRetrato.get(p.no);
+            const q = noPaisagem.get(p.no);
+            return (
+              <button
+                type="button"
+                class:list={['v3d__marcador', 'v3d__marcador--estatico', { 'so-retrato': !q, 'so-paisagem': !r }]}
+                data-v3d-ponto={p.no}
+                tabindex="-1"
+                aria-label={`${p.numero}. ${p.titulo}`}
+                style={`--rx:${r?.x ?? 0};--ry:${r?.y ?? 0};--px:${q?.x ?? 0};--py:${q?.y ?? 0}`}
+              >
+                <span aria-hidden="true">{p.numero}</span>
+              </button>
+            );
+          })
+        }
+      </div>
+
+      <div class="v3d__canvas" data-v3d-canvas></div>
+      <div class="v3d__marcadores" data-v3d-marcadores></div>
+
+      <div class="v3d__capa">
+        <button type="button" class="botao v3d__iniciar" data-v3d-acao="iniciar">
+          <Icone nome="girar" /> Explorar em 3D
+        </button>
+        <p class="v3d__capa-nota">Modelo de {tamanhoModelo}</p>
+      </div>
+
+      <div class="v3d__carregando" aria-hidden="true">
+        <span class="v3d__barra" data-v3d-progresso></span>
+        <span class="t-rotulo">Carregando o modelo</span>
+      </div>
+
+      <div class="v3d__erro" role="alert">
+        <p data-v3d-erro-texto>Não foi possível abrir o 3D agora.</p>
+        <p class="t-nota">A imagem e a lista de pontos mostram os mesmos detalhes.</p>
+        <button type="button" class="botao botao--linha" data-v3d-acao="tentar">Tentar de novo</button>
+      </div>
+
+      <button type="button" class="v3d__fechar" data-v3d-acao="fechar">
+        <Icone nome="fechar" /> <span>Fechar 3D</span>
+      </button>
+
+      <div class="v3d__ferramentas" role="toolbar" aria-label="Controles do 3D">
+        <button type="button" data-v3d-acao="inicio" title="Vista inicial"><Icone nome="inicio" /><span class="sr">Voltar à vista inicial</span></button>
+        <button type="button" data-v3d-acao="aproximar" title="Aproximar"><Icone nome="mais" /><span class="sr">Aproximar</span></button>
+        <button type="button" data-v3d-acao="afastar" title="Afastar"><Icone nome="menos" /><span class="sr">Afastar</span></button>
+        <button type="button" data-v3d-acao="ajuda" title="Como usar"><Icone nome="ajuda" /><span class="sr">Como usar o 3D</span></button>
+        <button type="button" data-v3d-acao="tela-cheia" class="v3d__so-desktop" title="Tela cheia"><Icone nome="expandir" /><span class="sr">Alternar tela cheia</span></button>
+      </div>
+
+      <div class="v3d__dica" data-v3d-dica hidden>
+        <ul role="list">
+          <li><span class="v3d__gesto" aria-hidden="true"><Icone nome="girar" /></span><span class="v3d__toque">Arraste com um dedo para girar</span><span class="v3d__mouse">Arraste para girar</span></li>
+          <li><span class="v3d__gesto" aria-hidden="true"><Icone nome="mais" /></span><span class="v3d__toque">Pinça com dois dedos para aproximar</span><span class="v3d__mouse">Clique no 3D e use a roda para aproximar</span></li>
+          <li><span class="v3d__gesto" aria-hidden="true">1</span><span>Toque nos números para ver cada detalhe</span></li>
+        </ul>
+        <button type="button" class="botao" data-v3d-acao="ajuda">Entendi</button>
+      </div>
+
+      <p class="sr" data-v3d-status aria-live="polite"></p>
+      <p class="sr" id={`${id}-teclado`}>Com o 3D aberto e este quadro em foco: setas giram a câmera, mais e menos aproximam, zero volta à vista inicial. A lista de pontos fica logo após o quadro.</p>
+    </div>
+
+    <div class="v3d__painel">
+      <h2 class="v3d__titulo-lista" id={`${id}-lista`}>Pontos do projeto</h2>
+      <ol role="list" class="v3d__lista" aria-labelledby={`${id}-lista`}>
+        {
+          pontos.map((p) => (
+            <li>
+              <button type="button" data-v3d-ponto={p.no} aria-expanded="false" aria-controls={`${id}-detalhes`}>
+                <span class="v3d__num" aria-hidden="true">
+                  {p.numero}
+                </span>
+                <span class="v3d__rotulo-longo">{p.titulo}</span>
+                <span class="v3d__rotulo-curto" aria-hidden="true">
+                  {p.rotulo}
+                </span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="v3d__vazio t-nota">Escolha um ponto na lista ou toque nos números sobre a imagem.</p>
+      <div class="v3d__detalhes" id={`${id}-detalhes`} data-v3d-painel-detalhe aria-live="polite">
+        {
+          pontos.map((p) => (
+            <article class="v3d__detalhe" data-v3d-detalhe={p.no}>
+              <header>
+                <span class="v3d__num" aria-hidden="true">
+                  {p.numero}
+                </span>
+                <h3 class="t-sub">{p.titulo}</h3>
+              </header>
+              <p class="v3d__resumo">{p.descricao}</p>
+              <ul class="v3d__itens">
+                {p.detalhes.map((d) => (
+                  <li>{d}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+        <div class="v3d__nav-detalhe">
+          <button type="button" data-v3d-acao="anterior"><Icone nome="anterior" /><span class="sr">Ponto anterior</span></button>
+          <button type="button" data-v3d-acao="proximo"><Icone nome="proximo" /><span class="sr">Próximo ponto</span></button>
+          <button type="button" class="v3d__fechar-detalhe" data-v3d-acao="fechar-detalhe"><Icone nome="fechar" /><span>Fechar</span></button>
+        </div>
+      </div>
+
+      <a class="link-seta v3d__cta" href={u(ctaHref)}>{ctaTexto} <Icone nome="seta" /></a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/visualizador/controle';
+</script>
+
+<style is:global>
+  /* ─────────────────────────────────────────────────────────────
+     Visualizador da cozinha
+     Celular: pôster 4:5 limpo, pontos em fichas; 3D abre em tela cheia.
+     Desktop (≥1024): palco 16:9 com painel de pontos flutuando à direita
+     e controles numa pílula embaixo; a câmera centraliza a cozinha na área livre.
+     ───────────────────────────────────────────────────────────── */
+  .v3d {
+    /* mesma cor do estúdio renderizado (topo → piso) */
+    --v3d-fundo: linear-gradient(180deg, #d0c2ad 0%, #c9b79d 55%, #c0a98b 100%);
+    --v3d-vidro: rgb(245 237 226 / 0.86);
+    --v3d-painel: clamp(300px, 26%, 360px);
+    position: relative;
+  }
+  .v3d__grade {
+    display: grid;
+    gap: 18px;
+  }
+
+  /* ——— Palco ——— */
+  .v3d__palco {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--v3d-fundo);
+    border-radius: var(--raio-g);
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--tinta);
+    touch-action: pan-y;
+    box-shadow: 0 1px 2px rgb(43 34 28 / 0.08), 0 30px 60px -40px rgb(43 34 28 / 0.45);
+  }
+  .v3d__palco:focus-visible {
+    outline-offset: -3px;
+  }
+  .v3d__poster,
+  .v3d__poster img,
+  .v3d__canvas,
+  .v3d__canvas canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .v3d__poster img {
+    object-fit: cover;
+    transition: opacity 0.6s var(--ease);
+  }
+  .v3d__canvas {
+    opacity: 0;
+    transition: opacity 0.6s var(--ease);
+  }
+  .v3d__canvas canvas {
+    touch-action: none;
+    outline: none;
+  }
+  .v3d[data-estado='ativo'] .v3d__canvas {
+    opacity: 1;
+  }
+  .v3d[data-estado='ativo'] .v3d__poster img,
+  .v3d[data-estado='ativo'] .v3d__pontos-estaticos {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .v3d[data-pausado] .v3d__canvas,
+  .v3d[data-pausado] .v3d__marcadores {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .v3d[data-pausado] .v3d__poster img,
+  .v3d[data-pausado] .v3d__pontos-estaticos {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ——— Marcadores ——— */
+  .v3d__marcadores,
+  .v3d__pontos-estaticos {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .v3d:not([data-estado='ativo']) .v3d__marcadores {
+    display: none;
+  }
+  .v3d__marcador {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 0;
+    background: var(--creme);
+    color: var(--tinta);
+    font-size: 0.8rem;
+    font-weight: 700;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgb(35 28 23 / 0.35), 0 0 0 6px rgb(245 237 226 / 0.28);
+    transition: opacity 0.25s var(--ease), background-color 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    will-change: transform;
+  }
+  .v3d__marcador::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+  }
+  .v3d__marcador:hover,
+  .v3d__marcador.is-ativo {
+    background: var(--tinta);
+    color: var(--creme);
+    box-shadow: 0 2px 10px rgb(35 28 23 / 0.4), 0 0 0 7px rgb(245 237 226 / 0.45);
+  }
+  .v3d__marcador.is-oculto {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .v3d__marcador--estatico {
+    left: calc(var(--rx) * 100%);
+    top: calc(var(--ry) * 100%);
+  }
+  .v3d__marcador--estatico.so-paisagem {
+    display: none;
+  }
+  .v3d:not(.js) .v3d__marcador {
+    pointer-events: none;
+  }
+
+  /* ——— Capa, carregamento, erro ——— */
+  .v3d__capa,
+  .v3d__carregando,
+  .v3d__erro {
+    position: absolute;
+    z-index: 5;
+    display: none;
+  }
+  .v3d.js[data-estado='ocioso'] .v3d__capa,
+  .v3d.js[data-pausado] .v3d__capa {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .v3d__iniciar {
+    box-shadow: 0 10px 30px -10px rgb(35 28 23 / 0.6);
+  }
+  .v3d__iniciar svg {
+    width: 22px;
+    height: 22px;
+  }
+  .v3d__capa-nota {
+    display: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--v3d-vidro);
+    backdrop-filter: blur(8px);
+  }
+  .v3d[data-estado='carregando'] .v3d__carregando {
+    display: grid;
+    gap: 10px;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    width: min(280px, 70%);
+    padding: 14px 18px;
+    border-radius: var(--raio);
+    background: var(--v3d-vidro);
+    backdrop-filter: blur(10px);
+    text-align: center;
+  }
+  .v3d__barra {
+    --p: 0;
+    display: block;
+    height: 3px;
+    border-radius: 3px;
+    background: rgb(43 34 28 / 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .v3d__barra::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--tinta);
+    transform-origin: left;
+    transform: scaleX(var(--p));
+    transition: transform 0.2s linear;
+  }
+  .v3d[data-estado='erro'] .v3d__erro {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    padding: 18px;
+    border-radius: var(--raio);
+    background: var(--creme);
+    box-shadow: 0 10px 30px -12px rgb(35 28 23 / 0.45);
+  }
+
+  /* ——— Controles ——— */
+  .v3d__ferramentas {
+    position: absolute;
+    z-index: 5;
+    top: 12px;
+    right: 12px;
+    display: none;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--v3d-vidro);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px -10px rgb(35 28 23 / 0.5);
+  }
+  .v3d[data-estado='ativo']:not([data-pausado]) .v3d__ferramentas {
+    display: flex;
+  }
+  .v3d__ferramentas button,
+  .v3d__nav-detalhe button {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: transparent;
+    color: var(--tinta);
+    border: 0;
+    border-radius: 999px;
+    transition: background-color 0.2s var(--ease);
+  }
+  .v3d__ferramentas button:hover,
+  .v3d__nav-detalhe button:hover {
+    background: rgb(43 34 28 / 0.08);
+  }
+  .v3d__ferramentas svg,
+  .v3d__fechar svg,
+  .v3d__nav-detalhe svg {
+    width: 20px;
+    height: 20px;
+  }
+  .v3d__so-desktop {
+    display: none !important;
+  }
+  .v3d__fechar {
+    position: absolute;
+    z-index: 5;
+    top: 12px;
+    left: 12px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    height: 52px;
+    padding: 0 18px 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--tinta);
+    color: var(--creme);
+    font-weight: 600;
+    box-shadow: 0 6px 20px -10px rgb(35 28 23 / 0.6);
+  }
+  .v3d.is-imersivo .v3d__fechar {
+    display: inline-flex;
+  }
+
+  /* ——— Dica de uso ——— */
+  .v3d__dica {
+    position: absolute;
+    z-index: 6;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(330px, calc(100% - 32px));
+    display: grid;
+    gap: 16px;
+    padding: 22px;
+    background: rgb(35 28 23 / 0.9);
+    color: var(--sobre-grafite);
+    border-radius: var(--raio);
+    backdrop-filter: blur(8px);
+  }
+  .v3d__dica ul {
+    display: grid;
+    gap: 12px;
+  }
+  .v3d__dica li {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+  .v3d__gesto {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgb(245 237 226 / 0.12);
+    color: var(--led);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .v3d__gesto svg {
+    width: 18px;
+    height: 18px;
+  }
+  .v3d__dica .botao {
+    --b-fundo: var(--creme);
+    --b-texto: var(--grafite);
+    min-height: 46px;
+  }
+  .v3d__mouse {
+    display: none;
+  }
+  @media (pointer: fine) {
+    .v3d__mouse {
+      display: inline;
+    }
+    .v3d__toque {
+      display: none;
+    }
+  }
+
+  /* ——— Painel: fichas de pontos + detalhe ——— */
+  .v3d__titulo-lista {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+    margin-bottom: 10px;
+  }
+  .v3d__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .v3d__lista button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 0 16px 0 7px;
+    background: var(--creme);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .v3d__lista button:hover {
+    border-color: var(--linha-forte);
+  }
+  .v3d__lista button.is-ativo {
+    background: var(--tinta);
+    color: var(--creme);
+  }
+  .v3d__num {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--papel-2);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--tinta);
+  }
+  .v3d__lista button.is-ativo .v3d__num {
+    background: var(--creme);
+  }
+  .v3d__rotulo-longo {
+    display: none;
+  }
+
+  .v3d__vazio {
+    display: none;
+    padding-top: 12px;
+  }
+  .v3d.js:not(.tem-selecao):not(.is-imersivo) .v3d__vazio {
+    display: block;
+  }
+  .v3d__detalhes {
+    padding-top: 16px;
+  }
+  .v3d.js .v3d__detalhes {
+    padding-top: 0;
+  }
+  .v3d__detalhe {
+    display: grid;
+    gap: 10px;
+    padding-block: 18px 12px;
+  }
+  .v3d__detalhe header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .v3d__resumo {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+  .v3d__itens {
+    display: grid;
+    gap: 6px;
+    padding-left: 1.1em;
+    color: var(--tinta-2);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .v3d__itens li::marker {
+    color: var(--madeira-2);
+  }
+  .v3d__nav-detalhe {
+    display: none;
+    gap: 6px;
+    align-items: center;
+  }
+  .v3d.js .v3d__nav-detalhe {
+    display: flex;
+  }
+  .v3d__nav-detalhe button {
+    background: var(--papel-2);
+  }
+  .v3d__nav-detalhe .v3d__fechar-detalhe {
+    margin-left: auto;
+    width: auto;
+    padding: 0 16px 0 12px;
+    display: inline-flex;
+    gap: 6px;
+    font-weight: 600;
+  }
+  .v3d__cta {
+    margin-top: 16px;
+  }
+
+  /* ——— Desktop: palco amplo, painel flutuante, controles embaixo ——— */
+  @media (min-width: 1024px) {
+    .v3d__grade {
+      position: relative;
+      display: block;
+    }
+    .v3d__palco {
+      aspect-ratio: 16 / 9;
+      max-height: calc(100svh - var(--topo) - 40px);
+      min-height: 520px;
+      width: 100%;
+    }
+    .v3d__marcador--estatico {
+      left: calc(var(--px) * 100%);
+      top: calc(var(--py) * 100%);
+    }
+    .v3d__marcador--estatico.so-paisagem {
+      display: grid;
+    }
+    .v3d__marcador--estatico.so-retrato {
+      display: none;
+    }
+    .v3d:not(.is-imersivo) .v3d__painel {
+      position: absolute;
+      z-index: 6;
+      top: 16px;
+      right: 16px;
+      bottom: 16px;
+      width: var(--v3d-painel);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 22px 22px 18px;
+      border-radius: var(--raio);
+      background: var(--v3d-vidro);
+      backdrop-filter: blur(16px) saturate(1.1);
+      box-shadow: 0 20px 50px -30px rgb(35 28 23 / 0.6);
+      scrollbar-width: thin;
+    }
+    .v3d:not(.is-imersivo) .v3d__lista {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 4px;
+    }
+    .v3d:not(.is-imersivo) .v3d__lista button {
+      width: 100%;
+      background: transparent;
+      padding: 0 12px 0 6px;
+    }
+    .v3d:not(.is-imersivo) .v3d__lista button:hover {
+      background: rgb(43 34 28 / 0.06);
+      border-color: transparent;
+    }
+    .v3d:not(.is-imersivo) .v3d__lista button.is-ativo {
+      background: var(--tinta);
+    }
+    .v3d:not(.is-imersivo) .v3d__rotulo-longo {
+      display: inline;
+    }
+    .v3d:not(.is-imersivo) .v3d__rotulo-curto {
+      display: none;
+    }
+    /* com um ponto aberto, a lista encolhe para números e o detalhe ganha o espaço */
+    .v3d:not(.is-imersivo).tem-selecao .v3d__lista {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .v3d:not(.is-imersivo).tem-selecao .v3d__lista button {
+      width: auto;
+      padding: 0;
+      min-height: 44px;
+      min-width: 44px;
+      justify-content: center;
+    }
+    .v3d:not(.is-imersivo).tem-selecao .v3d__lista button .v3d__rotulo-longo {
+      display: none;
+    }
+    .v3d:not(.is-imersivo).tem-selecao .v3d__lista button .v3d__num {
+      background: transparent;
+      color: inherit;
+    }
+    .v3d:not(.is-imersivo) .v3d__detalhe {
+      border-top: 1px solid var(--linha);
+      margin-top: 14px;
+    }
+    .v3d:not(.is-imersivo) .v3d__ferramentas {
+      top: auto;
+      right: auto;
+      left: 16px;
+      bottom: 16px;
+    }
+    .v3d.js[data-estado='ocioso']:not(.is-imersivo) .v3d__capa,
+    .v3d[data-estado='carregando']:not(.is-imersivo) .v3d__carregando {
+      left: calc((100% - var(--v3d-painel) - 32px) / 2);
+    }
+    .v3d__capa-nota {
+      display: inline-block;
+    }
+    .v3d[data-estado='erro']:not(.is-imersivo) .v3d__erro {
+      right: calc(var(--v3d-painel) + 32px);
+      max-width: 420px;
+    }
+  }
+  @media (min-width: 1024px) and (pointer: fine) {
+    .v3d__so-desktop {
+      display: inline-grid !important;
+    }
+  }
+
+  /* ——— Tela cheia: 3D e painel dividem a tela ——— */
+  .v3d.is-imersivo {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #d0c2ad;
+    color: var(--tinta);
+  }
+  .v3d.is-imersivo .v3d__grade {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 0;
+  }
+  .v3d.is-imersivo .v3d__palco {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: auto;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    touch-action: none;
+  }
+  .v3d.is-imersivo .v3d__pontos-estaticos {
+    display: none;
+  }
+  .v3d.is-imersivo .v3d__painel {
+    position: relative;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    background: var(--papel);
+    border-radius: var(--raio-g) var(--raio-g) 0 0;
+    margin-top: -24px;
+    z-index: 6;
+    padding: 12px 0 calc(10px + env(safe-area-inset-bottom));
+    max-height: 48svh;
+    box-shadow: 0 -12px 30px -18px rgb(35 28 23 / 0.5);
+  }
+  .v3d.is-imersivo .v3d__titulo-lista,
+  .v3d.is-imersivo .v3d__cta,
+  .v3d.is-imersivo .v3d__vazio {
+    display: none;
+  }
+  .v3d.is-imersivo .v3d__lista {
+    order: 2;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 4px 16px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .v3d.is-imersivo .v3d__lista::-webkit-scrollbar {
+    display: none;
+  }
+  .v3d.is-imersivo .v3d__lista button {
+    background: var(--papel-2);
+  }
+  .v3d.is-imersivo .v3d__lista button .v3d__num {
+    background: var(--creme);
+  }
+  .v3d.is-imersivo .v3d__lista button.is-ativo {
+    background: var(--tinta);
+  }
+  .v3d.is-imersivo .v3d__detalhes {
+    order: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 18px 8px;
+    max-height: 30svh;
+  }
+  .v3d.is-imersivo .v3d__detalhe {
+    padding-block: 6px 8px;
+    gap: 8px;
+  }
+  .v3d.is-imersivo .v3d__detalhe .t-sub {
+    font-size: 1.2rem;
+  }
+  .v3d.is-imersivo .v3d__resumo {
+    font-size: 1rem;
+  }
+  .v3d.is-imersivo .v3d__itens {
+    font-size: 0.92rem;
+  }
+  @media (min-width: 1024px) {
+    .v3d.is-imersivo .v3d__grade {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 400px;
+    }
+    .v3d.is-imersivo .v3d__palco {
+      height: 100%;
+    }
+    .v3d.is-imersivo .v3d__painel {
+      margin: 0;
+      border-radius: 0;
+      height: 100%;
+      max-height: none;
+      overflow-y: auto;
+      padding: 24px 0;
+      box-shadow: -1px 0 0 var(--linha);
+    }
+    .v3d.is-imersivo .v3d__lista {
+      order: 1;
+      flex-direction: column;
+      overflow: visible;
+    }
+    .v3d.is-imersivo .v3d__lista button {
+      width: 100%;
+      background: transparent;
+    }
+    .v3d.is-imersivo .v3d__lista button.is-ativo {
+      background: var(--tinta);
+    }
+    .v3d.is-imersivo .v3d__rotulo-longo {
+      display: inline;
+    }
+    .v3d.is-imersivo .v3d__rotulo-curto {
+      display: none;
+    }
+    .v3d.is-imersivo .v3d__detalhes {
+      order: 2;
+      max-height: none;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--linha);
+    }
+    .v3d.is-imersivo .v3d__ferramentas {
+      top: auto;
+      right: auto;
+      left: 16px;
+      bottom: 16px;
+    }
+  }
+</style>

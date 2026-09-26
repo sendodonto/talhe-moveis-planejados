@@ -1,0 +1,249 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Icone from '../components/Icone.astro';
+import { etapas, perguntas } from '../content/processo';
+import { empresa } from '../config/empresa';
+import { creditoDe } from '../content/ambientes';
+import maos from '../assets/fotos/oficina-maos.jpg';
+
+const icones = ['whatsapp', 'trena', 'cubo', 'serra'] as const;
+const cred = creditoDe('oficina-maos');
+---
+
+<Base
+  titulo="Como trabalhamos"
+  descricao={`Como a ${empresa.nome} trabalha: conversa, medição no local, projeto em 3D, produção e montagem de móveis planejados.`}
+>
+  <section class="faixa abertura" aria-labelledby="abertura-titulo">
+    <div class="abertura__texto">
+      <h1 class="t-display" id="abertura-titulo">Todo móvel sob medida <em>começa com uma trena</em></h1>
+      <p class="t-lead">
+        A {empresa.nome} projeta, produz e monta móveis planejados em {empresa.regiaoAtendimento}. Nada de módulo pronto adaptado na obra: cada peça nasce
+        das medidas da sua parede.
+      </p>
+      <p class="t-texto">
+        Você vê o ambiente em 3D e aprova layout, acabamentos e ferragens antes da produção. Depois, a mesma equipe acompanha a montagem até a última porta
+        regulada.
+      </p>
+      <!-- EDITAR: acrescente a história real da empresa (fundação, equipe, oficina), sem números que não possam ser comprovados. -->
+    </div>
+    <figure class="abertura__foto">
+      <Picture src={maos} alt="Mãos marcando uma peça de madeira com lápis sobre a bancada." widths={[480, 800, 1200]} sizes="(min-width: 900px) 42vw, 100vw" formats={['avif', 'webp']} fallbackFormat="webp" loading="eager" />
+      {cred && <figcaption>Referência · <a href={cred.pagina} target="_blank" rel="noopener">{cred.autor} / Unsplash</a></figcaption>}
+    </figure>
+  </section>
+
+  <section class="faixa secao" id="processo" aria-labelledby="processo-titulo">
+    <div class="processo__cabeca">
+      <h2 class="t-titulo" id="processo-titulo">Quatro etapas, <em>zero surpresa</em></h2>
+      <p class="t-texto">Em cada uma, o que você recebe e o que precisamos de você.</p>
+    </div>
+    <ol class="etapas">
+      {
+        etapas.map((e, i) => (
+          <li class="etapa revela">
+            <Icone nome={icones[i]} class="etapa__icone" />
+            <h3 class="t-sub">{e.titulo}</h3>
+            <p class="etapa__resumo">{e.texto}</p>
+            <div class="etapa__listas">
+              <div>
+                <h4>Você recebe</h4>
+                <ul>
+                  {e.voceRecebe.map((x) => (
+                    <li>{x}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4>Precisamos de você</h4>
+                <ul>
+                  {e.precisamos.map((x) => (
+                    <li>{x}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="faixa perguntas" aria-labelledby="perguntas-titulo">
+    <h2 class="t-titulo" id="perguntas-titulo">Antes de <em>pedir o orçamento</em></h2>
+    <div class="perguntas__lista">
+      {
+        perguntas.map((q) => (
+          <details>
+            <summary>
+              {q.p}
+              <Icone nome="mais" />
+            </summary>
+            <p class="t-texto">{q.r}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .abertura {
+    display: grid;
+    gap: 28px;
+    padding-block: clamp(24px, 5vw, 72px) 0;
+  }
+  .abertura__texto {
+    display: grid;
+    gap: 18px;
+    align-content: center;
+  }
+  .abertura h1 {
+    max-width: 15ch;
+  }
+  .abertura__foto {
+    display: grid;
+    gap: 8px;
+  }
+  .abertura__foto :global(picture) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--raio-g);
+    overflow: hidden;
+  }
+  .abertura__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .abertura__foto figcaption {
+    font-size: 0.78rem;
+    color: var(--tinta-2);
+  }
+  .abertura__foto figcaption a {
+    color: inherit;
+    display: inline-block;
+    padding-block: 6px;
+  }
+  @media (min-width: 900px) {
+    .abertura {
+      grid-template-columns: 6fr 5fr;
+      gap: clamp(40px, 6vw, 104px);
+    }
+  }
+
+  .processo__cabeca {
+    display: grid;
+    gap: 12px;
+    justify-items: center;
+    text-align: center;
+    margin-bottom: clamp(32px, 5vw, 56px);
+  }
+  .etapas {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .etapa {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 26px 22px;
+    border-radius: var(--raio);
+    background: var(--creme);
+    box-shadow: 0 1px 2px rgb(43 34 28 / 0.06), 0 12px 32px -18px rgb(43 34 28 / 0.25);
+  }
+  .etapa :global(.etapa__icone) {
+    width: 30px;
+    height: 30px;
+    color: var(--madeira);
+  }
+  .etapa__resumo {
+    color: var(--tinta-2);
+    font-size: 0.98rem;
+  }
+  .etapa__listas {
+    display: grid;
+    gap: 14px;
+    margin-top: 6px;
+    padding-top: 16px;
+    border-top: 1px solid var(--linha);
+  }
+  .etapa h4 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+  }
+  .etapa ul {
+    margin: 6px 0 0;
+    padding-left: 1.1em;
+    font-size: 0.93rem;
+    display: grid;
+    gap: 4px;
+  }
+  .etapa ul li::marker {
+    color: var(--madeira-2);
+  }
+  @media (min-width: 720px) {
+    .etapas {
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .etapas {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .perguntas {
+    display: grid;
+    gap: 28px;
+    padding-bottom: clamp(64px, 8vw, 120px);
+  }
+  .perguntas__lista {
+    border-top: 1px solid var(--linha-forte);
+  }
+  .perguntas details {
+    border-bottom: 1px solid var(--linha-forte);
+  }
+  .perguntas summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    min-height: 64px;
+    padding: 12px 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .perguntas summary::-webkit-details-marker {
+    display: none;
+  }
+  .perguntas summary :global(svg) {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    transition: transform 0.4s var(--ease);
+  }
+  .perguntas details[open] summary :global(svg) {
+    transform: rotate(45deg);
+  }
+  .perguntas details p {
+    padding-bottom: 20px;
+  }
+  @media (min-width: 1024px) {
+    .perguntas {
+      grid-template-columns: 5fr 7fr;
+      gap: clamp(48px, 7vw, 128px);
+      align-items: start;
+    }
+  }
+</style>
