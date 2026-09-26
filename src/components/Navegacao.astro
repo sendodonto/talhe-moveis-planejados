@@ -152,17 +152,21 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
     .topo.rolou {
       box-shadow: 0 1px 0 var(--linha);
     }
+    /* Sobre o herói o cabeçalho rola junto com a foto (não cobre o texto);
+       depois do herói volta fixo, sólido, deslizando de cima. */
     .topo--foto {
-      position: fixed;
+      position: absolute;
       background: transparent;
       backdrop-filter: none;
       border-radius: var(--raio-g) var(--raio-g) 0 0;
     }
     .topo--foto.solido {
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
       border-radius: 0;
+      animation: desce 0.45s var(--ease);
       background: color-mix(in srgb, var(--papel) 92%, transparent);
       backdrop-filter: saturate(1.2) blur(12px);
       color: var(--tinta);
@@ -199,6 +203,12 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
     .topo--foto:not(.solido) .topo__cta {
       --b-fundo: var(--creme);
       --b-texto: var(--tinta);
+    }
+  }
+
+  @keyframes desce {
+    from {
+      transform: translateY(-100%);
     }
   }
 
@@ -448,7 +458,7 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
         topo.classList.toggle('rolou', y > 8);
         if (topo.hasAttribute('data-sobre-foto')) {
           const heroi = document.querySelector<HTMLElement>('[data-heroi]');
-          const limite = heroi ? heroi.offsetTop + heroi.offsetHeight - 90 : 400;
+          const limite = heroi ? heroi.offsetTop + heroi.offsetHeight : 400;
           topo.classList.toggle('solido', y > limite);
         }
         pedido = false;
