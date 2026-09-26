@@ -41,7 +41,7 @@
   --margem: clamp(16px, 4.6vw, 56px);
   --moldura: clamp(8px, 1.2vw, 16px);
   --largura: 1440px;
-  --barra: 64px;
+  --barra: 80px;
   --topo: 0px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }

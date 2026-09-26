@@ -42,23 +42,25 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
         Pedir orçamento <Icone nome="seta" />
       </a>
     </nav>
+    <button type="button" class="topo__menu" data-abrir-menu aria-haspopup="dialog" aria-controls="menu-celular" aria-label="Abrir menu">
+      <Icone nome="menu" />
+    </button>
   </div>
 </header>
 
-<div class:list={['barra', { 'barra--so-menu': naPaginaOrcamento && !temWhatsapp }]} data-barra>
-  <button type="button" class="barra__menu" data-abrir-menu aria-haspopup="dialog" aria-controls="menu-celular">
+<div class:list={['barra', { 'barra--so-menu': naPaginaOrcamento && !temWhatsapp }]} data-barra data-esperar-heroi={sobreFoto ? '' : undefined}>
+  <button type="button" class="barra__menu" data-abrir-menu aria-haspopup="dialog" aria-controls="menu-celular" aria-label="Abrir menu">
     <Icone nome="menu" />
-    <span>Menu</span>
   </button>
   {
     naPaginaOrcamento ? (
       temWhatsapp ? (
-        <a class="botao botao--whats barra__cta" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener">
+        <a class="barra__cta barra__cta--whats" href={linkWhatsapp(`Olá! Vim pelo site da ${empresa.nome}.`)} target="_blank" rel="noopener">
           <Icone nome="whatsapp" /> WhatsApp
         </a>
       ) : null
     ) : (
-      <a class="botao barra__cta" href={u('/orcamento')}>
+      <a class="barra__cta" href={u('/orcamento')}>
         Pedir orçamento <Icone nome="seta" />
       </a>
     )
@@ -200,45 +202,126 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
     }
   }
 
-  /* ——— Barra inferior (celular) ——— */
+  /* ——— Menu no cabeçalho (celular) ——— */
+  .topo__menu {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+  }
+  .topo__menu :global(svg) {
+    width: 26px;
+    height: 26px;
+  }
+  @media (min-width: 1024px) {
+    .topo__menu {
+      display: none;
+    }
+  }
+
+  /* ——— Cápsula de ação flutuante (celular) ——— */
   .barra {
     position: fixed;
-    inset: auto 0 0 0;
     z-index: 50;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px;
-    padding: 8px var(--margem) calc(8px + env(safe-area-inset-bottom));
-    background: color-mix(in srgb, var(--papel) 94%, transparent);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 -1px 0 var(--linha), 0 -8px 24px rgb(43 34 28 / 0.06);
-    transition: transform 0.4s var(--ease);
-  }
-  .barra--so-menu {
-    grid-template-columns: 1fr;
+    left: 50%;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    padding: 5px;
+    border-radius: 999px;
+    background: rgb(35 28 23 / 0.86);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    /* borda clara no topo: luz batendo no material */
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      0 1px 2px rgb(35 28 23 / 0.2),
+      0 16px 36px -14px rgb(35 28 23 / 0.55);
+    color: var(--creme);
+    transform: translateX(-50%);
+    transition:
+      transform 0.5s var(--ease),
+      opacity 0.35s var(--ease),
+      filter 0.5s var(--ease);
   }
   .barra.escondida {
-    transform: translateY(calc(100% + 2px));
+    transform: translateX(-50%) translateY(calc(100% + 24px)) scale(0.92);
+    opacity: 0;
+    filter: blur(6px);
+    pointer-events: none;
+  }
+  .barra__menu,
+  .barra__cta,
+  .topo__menu {
+    -webkit-tap-highlight-color: transparent;
   }
   .barra__menu {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 48px;
-    min-width: 48px;
-    padding: 0 18px 0 14px;
-    background: none;
-    border: 1px solid var(--linha-forte);
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
     border-radius: 999px;
-    font-weight: 600;
+    background: rgb(245 237 226 / 0.1);
+    color: var(--creme);
+    transition: background-color 0.2s var(--ease), transform 0.1s var(--ease);
   }
-  .barra__menu svg {
+  .barra__menu :global(svg) {
     width: 22px;
     height: 22px;
   }
   .barra__cta {
-    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 48px;
+    padding: 0 22px 0 20px;
+    border-radius: 999px;
+    background: var(--creme);
+    color: var(--tinta);
+    font-weight: 650;
+    font-size: 0.98rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.1s var(--ease), background-color 0.2s var(--ease);
+  }
+  .barra__cta :global(svg) {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .barra__cta--whats {
+    background: #1d5c3f;
+    color: #fff;
+  }
+  /* resposta no toque, não só ao soltar */
+  .barra__menu:active,
+  .barra__cta:active {
+    transform: scale(0.95);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .barra.escondida {
+      transform: translateX(-50%);
+      filter: none;
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .barra {
+      background: var(--grafite);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
   @media (min-width: 1024px) {
     .barra {
@@ -324,12 +407,14 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
 
 <script>
   const menu = document.querySelector<HTMLDialogElement>('[data-menu]')!;
-  const abrir = document.querySelector<HTMLButtonElement>('[data-abrir-menu]')!;
-  abrir.addEventListener('click', () => {
-    menu.showModal();
-    abrir.setAttribute('aria-expanded', 'true');
-  });
-  menu.addEventListener('close', () => abrir.setAttribute('aria-expanded', 'false'));
+  const abrir = document.querySelectorAll<HTMLButtonElement>('[data-abrir-menu]');
+  abrir.forEach((b) =>
+    b.addEventListener('click', () => {
+      menu.showModal();
+      b.setAttribute('aria-expanded', 'true');
+    }),
+  );
+  menu.addEventListener('close', () => abrir.forEach((b) => b.setAttribute('aria-expanded', 'false')));
   // Toque fora do painel fecha
   menu.addEventListener('click', (e) => {
     if (e.target === menu) menu.close();
@@ -342,6 +427,10 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
   const topo = document.querySelector<HTMLElement>('[data-topo]')!;
   let y0 = scrollY;
   let pedido = false;
+  // Na home, a cápsula espera o herói sair da tela (ele já tem o botão de orçamento).
+  const heroiEl = barra.hasAttribute('data-esperar-heroi') ? document.querySelector<HTMLElement>('[data-heroi]') : null;
+  const sobreHeroi = (y: number) => !!heroiEl && y < heroiEl.offsetTop + heroiEl.offsetHeight * 0.7;
+  if (sobreHeroi(scrollY)) barra.classList.add('escondida');
   addEventListener(
     'scroll',
     () => {
@@ -356,6 +445,7 @@ const naPaginaOrcamento = atual.startsWith('/orcamento');
           y0 = y;
         }
         if (fim) barra.classList.remove('escondida');
+        if (sobreHeroi(y)) barra.classList.add('escondida');
         topo.classList.toggle('rolou', y > 8);
         if (topo.hasAttribute('data-sobre-foto')) {
           const heroi = document.querySelector<HTMLElement>('[data-heroi]');
