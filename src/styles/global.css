@@ -167,33 +167,30 @@ button {
   top: 12px;
 }
 
-/* ——— Tipografia ——— */
+/* ——— Tipografia ———
+   Títulos em Albert Sans: peso forte, tracking negativo proporcional ao tamanho,
+   entrelinha curta. A Didone (Bodoni Moda) fica reservada ao nome no herói. */
 .t-display,
 .t-titulo,
 .t-sub {
-  font-family: var(--f-serif);
-  /* eixo óptico baixo: hastes finas continuam visíveis em tamanho grande */
-  font-optical-sizing: none;
-  font-variation-settings: 'opsz' 20;
-  font-weight: 460;
+  font-family: var(--f-sans);
+  font-weight: 650;
   text-wrap: balance;
 }
-/* Títulos: Didone em caixa alta espaçada, como uma placa de showroom */
 .t-display {
-  font-size: clamp(2rem, 1.2rem + 3.6vw, 4rem);
-  line-height: 1.08;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: clamp(2.1rem, 1.3rem + 3vw, 3.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
 }
 .t-titulo {
-  font-size: clamp(1.55rem, 1.15rem + 1.7vw, 2.5rem);
-  line-height: 1.15;
-  letter-spacing: 0.035em;
-  text-transform: uppercase;
+  font-size: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
 }
 .t-sub {
-  font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem);
+  font-size: clamp(1.2rem, 1.1rem + 0.45vw, 1.45rem);
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 /* Destaque em sans: títulos de seção no estilo da referência (peso forte,
    tracking negativo no tamanho grande, entrelinha curta). */

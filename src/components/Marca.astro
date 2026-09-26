@@ -1,5 +1,6 @@
 ---
-// Logotipo provisório: o nome em Didone, caixa alta espaçada.
+// Logotipo provisório: o nome em sans, caixa alta espaçada.
+// (A versão em Didone aparece só no herói da página inicial.)
 import { empresa } from '../config/empresa';
 interface Props {
   tamanho?: 'normal' | 'grande';
@@ -11,19 +12,18 @@ const { tamanho = 'normal' } = Astro.props;
 
 <style>
   .marca {
-    font-family: var(--f-serif);
-    font-weight: 500;
-    font-variation-settings: 'opsz' 20;
-    font-size: 1.3rem;
+    font-family: var(--f-sans);
+    font-weight: 700;
+    font-size: 1.12rem;
     line-height: 1;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     /* compensa o espaçamento após a última letra */
-    margin-right: -0.24em;
+    margin-right: -0.22em;
   }
   .marca--grande {
-    font-size: clamp(2.6rem, 1.5rem + 6vw, 6rem);
-    letter-spacing: 0.12em;
-    margin-right: -0.12em;
+    font-size: clamp(2.2rem, 1.4rem + 4vw, 4.5rem);
+    letter-spacing: 0.1em;
+    margin-right: -0.1em;
   }
 </style>
