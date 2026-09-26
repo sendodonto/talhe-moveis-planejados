@@ -12,7 +12,7 @@ export default defineConfig({
   site: SITE,
   base: BASE,
   trailingSlash: 'never',
-  build: { format: 'directory', inlineStylesheets: 'auto' },
+  build: { format: 'file', inlineStylesheets: 'auto' },
   integrations: [sitemap({ filter: (p) => !p.includes('/404') })],
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   vite: {
