@@ -17,11 +17,12 @@ const credHeroi = creditoDe('closet-2');
 // Imagem de compartilhamento: a própria foto do herói
 const og = heroi;
 
-const garantias = [
-  { icone: 'trena', titulo: 'Sob medida', texto: 'Projeto feito para a sua planta' },
-  { icone: 'chave', titulo: 'Qualquer ambiente', texto: 'Da cozinha ao lavabo' },
-  { icone: 'formulario', titulo: 'Orçamento on-line', texto: 'Formulário em poucos minutos' },
-  { icone: 'local', titulo: 'Atendimento', texto: empresa.regiaoAtendimento },
+// Ficha da apresentação: fatos verificáveis, sem promessas inventadas.
+const ficha = [
+  { icone: 'trena', rotulo: 'Medida', valor: 'A partir da sua planta' },
+  { icone: 'chave', rotulo: 'Ambientes', valor: 'Da cozinha ao lavabo' },
+  { icone: 'formulario', rotulo: 'Orçamento', valor: 'On-line, em poucos minutos' },
+  { icone: 'local', rotulo: 'Atendimento', valor: empresa.regiaoAtendimento },
 ] as const;
 ---
 
@@ -59,40 +60,32 @@ const garantias = [
     </div>
   </section>
 
-  <!-- ——— Garantias do processo ——— -->
-  <section class="faixa garantias" aria-label="Como atendemos">
-    <ul role="list">
+  <!-- ——— Apresentação: declaração + ficha ——— -->
+  <section class="faixa apresentacao" aria-labelledby="apresentacao-titulo">
+    <div class="apresentacao__topo">
+      <h2 class="apresentacao__titulo" id="apresentacao-titulo">Móveis sob medida para cada canto da casa</h2>
+      <p class="apresentacao__texto">
+        Parede fora de esquadro, viga no meio do caminho, tomada no lugar errado: tudo isso entra no projeto <strong>antes do primeiro corte</strong>.
+        O resultado são armários rentes ao teto e gavetas exatamente onde você precisa delas.
+      </p>
+    </div>
+    <dl class="ficha">
       {
-        garantias.map((g) => (
-          <li>
-            <span class="garantias__icone">
-              <Icone nome={g.icone} />
-            </span>
-            <span>
-              <strong>{g.titulo}</strong>
-              <span>{g.texto}</span>
-            </span>
-          </li>
+        ficha.map((f) => (
+          <div>
+            <dt>
+              <Icone nome={f.icone} />
+              {f.rotulo}
+            </dt>
+            <dd>{f.valor}</dd>
+          </div>
         ))
       }
-    </ul>
+    </dl>
   </section>
 
-  <!-- ——— Apresentação + ambientes ——— -->
-  <section class="faixa ambientes secao" aria-labelledby="ambientes-titulo">
-    <div class="ambientes__intro">
-      <h2 class="t-titulo" id="ambientes-titulo">Móveis sob medida para <em>cada canto da casa</em></h2>
-      <div class="ambientes__texto">
-        <p class="t-lead">
-          Parede fora de esquadro, viga no meio do caminho, tomada no lugar errado: tudo isso entra no projeto antes do primeiro corte.
-        </p>
-        <p class="t-texto">
-          O resultado são armários que fecham rente ao teto, gavetas onde você realmente precisa delas e espaço para o que você guarda — não para o que
-          um catálogo imaginou.
-        </p>
-      </div>
-    </div>
-
+  <!-- ——— Ambientes ——— -->
+  <section class="faixa ambientes" aria-label="Ambientes">
     <ul role="list" class="ambientes__grade">
       {
         ambientes.map((a, i) => (
@@ -294,73 +287,90 @@ const garantias = [
     }
   }
 
-  /* ——— Garantias ——— */
-  .garantias {
-    padding-block: 28px;
+  /* ——— Apresentação ——— */
+  .apresentacao {
+    padding-block: clamp(64px, 9vw, 136px) clamp(40px, 5vw, 64px);
   }
-  .garantias ul {
+  .apresentacao__topo {
     display: grid;
-    gap: 14px;
+    gap: 22px;
   }
-  .garantias li {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    font-size: 0.92rem;
-    line-height: 1.4;
+  .apresentacao__titulo {
+    font-family: var(--f-serif);
+    font-optical-sizing: none;
+    font-variation-settings: 'opsz' 36;
+    font-weight: 460;
+    text-transform: uppercase;
+    /* tamanho de destaque pede tracking quase neutro; espaçado só nos rótulos pequenos */
+    font-size: clamp(2.1rem, 1.1rem + 3.5vw, 4.25rem);
+    line-height: 1.02;
+    letter-spacing: 0.004em;
+    max-width: 17ch;
+    text-wrap: balance;
   }
-  .garantias strong {
-    display: block;
+  .apresentacao__texto {
+    font-size: clamp(1.1rem, 1rem + 0.35vw, 1.28rem);
+    line-height: 1.55;
+    color: var(--tinta-2);
+    max-width: 40ch;
+    text-wrap: pretty;
+  }
+  .apresentacao__texto strong {
+    color: var(--tinta);
     font-weight: 600;
   }
-  .garantias li span span {
+  .ficha {
+    margin: clamp(40px, 5vw, 72px) 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px 20px;
+    padding-top: 22px;
+    border-top: 1px solid var(--tinta);
+  }
+  .ficha dt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--tinta-2);
   }
-  .garantias__icone {
+  .ficha dt :global(svg) {
+    width: 18px;
+    height: 18px;
     flex: none;
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--papel-2);
     color: var(--madeira);
   }
-  .garantias__icone :global(svg) {
-    width: 21px;
-    height: 21px;
+  .ficha dd {
+    margin: 10px 0 0;
+    font-family: var(--f-serif);
+    font-optical-sizing: none;
+    font-variation-settings: 'opsz' 20;
+    font-weight: 460;
+    font-size: clamp(1.08rem, 0.98rem + 0.4vw, 1.35rem);
+    line-height: 1.25;
+    text-wrap: balance;
   }
-  @media (min-width: 900px) {
-    .garantias {
-      padding-block: 40px;
+  @media (min-width: 1024px) {
+    .apresentacao__topo {
+      grid-template-columns: 7fr 5fr;
+      align-items: end;
+      column-gap: clamp(48px, 6vw, 112px);
     }
-    .garantias ul {
+    .apresentacao__texto {
+      padding-bottom: 0.35em;
+    }
+    .ficha {
       grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-    }
-    .garantias li {
-      padding-inline: 24px;
-      border-left: 1px solid var(--linha);
-      align-items: center;
-    }
-    .garantias li:first-child {
-      border-left: 0;
-      padding-left: 0;
+      column-gap: clamp(24px, 3vw, 48px);
     }
   }
 
   /* ——— Ambientes ——— */
   .ambientes {
-    padding-top: clamp(40px, 6vw, 88px);
-  }
-  .ambientes__intro {
-    display: grid;
-    gap: 20px;
-    margin-bottom: clamp(36px, 5vw, 64px);
-  }
-  .ambientes__texto {
-    display: grid;
-    gap: 14px;
+    padding-bottom: clamp(64px, 8vw, 120px);
   }
   .ambientes__grade {
     display: grid;
@@ -368,14 +378,6 @@ const garantias = [
     gap: 28px 12px;
   }
   @media (min-width: 900px) {
-    .ambientes__intro {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-    }
-    .ambientes__texto {
-      padding-left: clamp(24px, 4vw, 64px);
-      border-left: 1px solid var(--linha-forte);
-    }
     .ambientes__grade {
       grid-template-columns: repeat(3, 1fr);
       gap: 40px 20px;

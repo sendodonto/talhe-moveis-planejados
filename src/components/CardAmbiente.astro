@@ -34,6 +34,7 @@ const { ambiente: a, prioridade = false, href = `/projetos#${a.id}` } = Astro.pr
 
 <style>
   .card {
+    -webkit-tap-highlight-color: transparent;
     display: grid;
     gap: 10px;
     text-decoration: none;
@@ -45,6 +46,12 @@ const { ambiente: a, prioridade = false, href = `/projetos#${a.id}` } = Astro.pr
     border-radius: var(--raio);
     overflow: hidden;
     background: var(--papel-2);
+    transition: transform 0.45s var(--ease);
+  }
+  /* resposta no toque, não só ao soltar */
+  .card:active .card__foto {
+    transform: scale(0.985);
+    transition-duration: 0.1s;
   }
   .card__foto :global(picture),
   .card__foto :global(img) {
