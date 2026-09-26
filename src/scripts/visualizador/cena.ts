@@ -83,7 +83,8 @@ export async function montarCena(
   sol.position.set(3.2, 5.4, 4.2);
   sol.target.position.set(-0.2, 0.6, -0.4);
   sol.castShadow = true;
-  const tamanhoSombra = qualidade === 'alta' ? 2048 : 1024;
+  // A sombra é calculada uma vez só (cena estática): resolução alta em qualquer aparelho.
+  const tamanhoSombra = qualidade === 'baixa' ? 1024 : 2048;
   sol.shadow.mapSize.set(tamanhoSombra, tamanhoSombra);
   const cam = sol.shadow.camera;
   cam.left = -4.2; cam.right = 4.2; cam.top = 4.2; cam.bottom = -4.2; cam.near = 1; cam.far = 16;
@@ -252,47 +253,98 @@ function criarAmbienteDeReflexo(): THREE.Scene {
 }
 
 export interface Pipeline {
-  /** completo=false: quadro rápido, sem oclusão de ambiente (usado durante o movimento). */
+  /**
+   * completo=true: quadro de repouso — resolução alta e oclusão de ambiente.
+   * completo=false: quadro de movimento — resolução menor, render direto.
+   */
   render(completo?: boolean): void;
   setSize(largura: number, altura: number): void;
+  /** Reduz a resolução usada em movimento (aparelho não acompanhou). */
+  reduzirMovimento(): boolean;
   dispose(): void;
 }
 
+export interface Resolucao {
+  /** Densidade de pixels do quadro parado (nítido). */
+  repouso: number;
+  /** Densidade de pixels durante o movimento (fluido). */
+  movimento: number;
+}
+
 /**
- * Renderização com oclusão de ambiente (GTAO) nas qualidades alta e média.
- * Na baixa, render direto — o custo de pós-processamento não compensa.
+ * Renderização progressiva: enquanto a câmera se move, quadros leves em
+ * resolução menor; quando para, um único quadro nítido com oclusão de ambiente
+ * (GTAO nas qualidades alta e média). Mesma ideia de visualizadores 3D
+ * profissionais: fluidez no gesto, qualidade no que fica na tela.
  */
 export function criarPipeline(
   renderer: THREE.WebGLRenderer,
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera,
   qualidade: Qualidade,
+  res: Resolucao,
 ): Pipeline {
+  let largura = 1;
+  let altura = 1;
+  let atual = 0;
+  const usar = (dpr: number) => {
+    if (dpr === atual) return;
+    atual = dpr;
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(largura, altura, false);
+  };
+  const reduzirMovimento = () => {
+    if (res.movimento <= 0.75) return false;
+    res.movimento = Math.max(0.75, res.movimento - 0.25);
+    return true;
+  };
+
   if (qualidade === 'baixa') {
     return {
-      render: () => renderer.render(scene, camera),
-      setSize: (w, h) => renderer.setSize(w, h, false),
+      render: (completo = true) => {
+        usar(completo ? res.repouso : res.movimento);
+        renderer.render(scene, camera);
+      },
+      setSize: (w, h) => {
+        largura = w;
+        altura = h;
+        atual = 0;
+        usar(res.repouso);
+      },
+      reduzirMovimento,
       dispose: () => {},
     };
   }
+
   const alvo = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
   const composer = new EffectComposer(renderer, alvo);
   composer.addPass(new RenderPass(scene, camera, undefined, new THREE.Color(0x000000), 0));
   const ao = new GTAOPass(scene, camera, 1, 1);
-  ao.updateGtaoMaterial({ radius: 0.32, distanceExponent: 1.6, thickness: 1.2, scale: 1, samples: qualidade === 'alta' ? 16 : 8 });
+  ao.updateGtaoMaterial({ radius: 0.32, distanceExponent: 1.6, thickness: 1.2, scale: 1, samples: qualidade === 'alta' ? 16 : 12 });
   ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 16 });
   ao.blendIntensity = 0.85;
   composer.addPass(ao);
   composer.addPass(new OutputPass());
   return {
-    // Durante o movimento, render direto (com MSAA do próprio canvas) — várias vezes
-    // mais barato. O quadro com oclusão de ambiente é feito quando a câmera para.
-    render: (completo = true) => (completo ? composer.render() : renderer.render(scene, camera)),
+    render: (completo = true) => {
+      if (completo) {
+        usar(res.repouso);
+        composer.render();
+      } else {
+        // alvos do composer ficam no tamanho de repouso; só o canvas muda
+        usar(res.movimento);
+        renderer.render(scene, camera);
+      }
+    },
     setSize: (w, h) => {
-      renderer.setSize(w, h, false);
-      composer.setPixelRatio(renderer.getPixelRatio());
+      largura = w;
+      altura = h;
+      atual = 0;
+      usar(res.repouso);
+      composer.setPixelRatio(res.repouso);
       composer.setSize(w, h);
     },
+    reduzirMovimento,
     dispose: () => {
       composer.dispose();
       ao.dispose();

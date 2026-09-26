@@ -62,10 +62,13 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     alpha: true,
     powerPreference: 'high-performance',
   });
-  // Acima de 1,5 o custo cresce muito e o ganho visual é pequeno num quadro de 16:9.
-  const dprMax = { alta: 1.5, media: 1.25, baixa: 1 }[o.qualidade];
-  let dpr = Math.min(window.devicePixelRatio || 1, dprMax);
-  renderer.setPixelRatio(dpr);
+  // Parado: até 2× (nítido também em telas de celular). Em movimento: menos pixels.
+  const tela = window.devicePixelRatio || 1;
+  const resolucao = {
+    repouso: Math.min(tela, 2),
+    movimento: Math.min(tela, { alta: 1.5, media: 1.25, baixa: 1 }[o.qualidade]),
+  };
+  renderer.setPixelRatio(resolucao.repouso);
   configurarRenderer(renderer, o.qualidade);
   const canvas = renderer.domElement;
   canvas.setAttribute('aria-hidden', 'true');
@@ -78,7 +81,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
   });
 
   const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 60);
-  const pipeline = criarPipeline(renderer, cena.scene, camera, o.qualidade);
+  const pipeline = criarPipeline(renderer, cena.scene, camera, o.qualidade, resolucao);
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = !o.reduzirMovimento;
@@ -121,11 +124,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     if (amostras.length < 40) return;
     const media = amostras.reduce((a, b) => a + b, 0) / amostras.length;
     amostras = [];
-    if (media > 30 && dpr > 1) {
-      dpr = Math.max(1, dpr - 0.25);
-      renderer.setPixelRatio(dpr);
-      pipeline.setSize(largura, altura);
-    }
+    if (media > 30) pipeline.reduzirMovimento();
   };
 
   function quadro(agora: number) {

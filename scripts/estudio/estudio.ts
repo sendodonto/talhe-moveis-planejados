@@ -22,7 +22,7 @@ interface Vista { w: number; h: number; escala?: number; desloc?: number; preset
   }
   const escala = v.escala ?? 2;
   renderer.setPixelRatio(escala);
-  pipeline ??= criarPipeline(renderer, cena.scene, camera, 'alta');
+  pipeline ??= criarPipeline(renderer, cena.scene, camera, 'alta', { repouso: escala, movimento: escala });
   pipeline.setSize(v.w, v.h);
   renderer.domElement.style.width = v.w + 'px';
   renderer.domElement.style.height = v.h + 'px';

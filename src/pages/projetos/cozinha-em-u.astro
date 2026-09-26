@@ -3,6 +3,7 @@ import { u } from '../../lib/url';
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Cozinha3D from '../../components/Cozinha3D.astro';
+import Icone from '../../components/Icone.astro';
 import { materiais } from '../../content/cozinha';
 import { empresa } from '../../config/empresa';
 import vista from '../../assets/renders/vista-inicial.png';
@@ -28,16 +29,12 @@ const detalhes = [
     <nav aria-label="Trilha" class="trilha">
       <a href={u('/projetos')}>Ambientes</a> <span aria-hidden="true">/</span> <span aria-current="page">Cozinha em U</span>
     </nav>
-    <div class="cabeca__grade">
-      <h1 class="t-destaque">Cozinha em U: grafite, madeira e granito preto.</h1>
-      <div class="pilha" style="--espaco: 14px">
-        <p class="t-lead">Gire, aproxime e toque nos números. Cada ponto mostra uma decisão de projeto — e por que ela foi tomada.</p>
-        <p class="t-nota">
-          <span class="selo-imagem">Estudo 3D</span> Modelo reconstruído a partir de uma referência visual, com medidas aproximadas. Mostra soluções e
-          acabamentos; não é uma obra executada pela {empresa.nome}.
-        </p>
-      </div>
-    </div>
+    <h1 class="t-destaque">Cozinha em U: grafite, madeira e granito preto.</h1>
+    <p class="cabeca__lead">Gire, aproxime e toque nos números para ver cada decisão do projeto.</p>
+    <p class="cabeca__nota">
+      <span class="selo-imagem">Estudo 3D</span>
+      <span>Reconstrução a partir de uma referência visual, com medidas aproximadas. Não é uma obra executada pela {empresa.nome}.</span>
+    </p>
   </header>
 
   <section class="faixa explorar" id="explorar" aria-label="Explorar a cozinha">
@@ -45,28 +42,34 @@ const detalhes = [
   </section>
 
   <section class="faixa secao materiais" id="materiais" aria-labelledby="materiais-titulo">
-    <div class="materiais__cabeca">
-      <h2 class="t-destaque" id="materiais-titulo">Seis materiais, cada um com uma função.</h2>
-      <p class="t-texto">No projeto real, cada padrão é escolhido com amostra física na mão.</p>
+    <div class="materiais__intro">
+      <h2 class="t-destaque" id="materiais-titulo">O que compõe esta cozinha.</h2>
+      <p class="t-texto">Seis materiais, cada um com uma função. No seu projeto, cada padrão é escolhido com amostra física na mão.</p>
+      <a class="botao" href={u(orcamento)}>Quero uma cozinha assim <Icone nome="seta" /></a>
     </div>
     <ul role="list" class="materiais__lista">
       {
         materiais.map((m) => (
           <li>
             <span class="materiais__amostra" style={`--cor:${m.cor}`} aria-hidden="true" />
-            <strong>{m.nome}</strong>
-            <span>{m.uso}</span>
+            <span class="materiais__nome">{m.nome}</span>
+            <span class="materiais__uso">{m.uso}</span>
           </li>
         ))
       }
     </ul>
+  </section>
 
-    <ul role="list" class="detalhes">
+  <section class="detalhes" aria-labelledby="detalhes-titulo">
+    <div class="faixa detalhes__cabeca">
+      <h2 class="detalhes__titulo" id="detalhes-titulo">De perto</h2>
+    </div>
+    <ul role="list" class="detalhes__faixa">
       {
         detalhes.map((d) => (
-          <li class="revela">
+          <li>
             <figure>
-              <Picture src={d.src} alt={d.alt} widths={[480, 800, 1200]} sizes="(min-width: 900px) 30vw, 100vw" formats={['avif', 'webp']} fallbackFormat="webp" />
+              <Picture src={d.src} alt={d.alt} widths={[480, 800, 1200]} sizes="(min-width: 900px) 30vw, 82vw" formats={['avif', 'webp']} fallbackFormat="webp" />
               <figcaption>{d.legenda}</figcaption>
             </figure>
           </li>
@@ -78,12 +81,13 @@ const detalhes = [
 
 <style>
   .cabeca {
-    padding-block: clamp(16px, 3vw, 36px) clamp(20px, 3vw, 32px);
+    display: grid;
+    gap: 14px;
+    padding-block: clamp(16px, 3vw, 36px) clamp(22px, 3vw, 36px);
   }
   .trilha {
     display: flex;
     gap: 8px;
-    margin-bottom: 14px;
     font-size: 0.85rem;
     color: var(--tinta-2);
   }
@@ -91,103 +95,158 @@ const detalhes = [
     min-height: 44px;
     display: inline-flex;
     align-items: center;
-    margin-block: -14px;
-  }
-  .cabeca__grade {
-    display: grid;
-    gap: 20px;
+    margin-block: -12px;
   }
   .cabeca h1 {
-    max-width: 20ch;
+    max-width: 22ch;
   }
-  .cabeca .selo-imagem {
-    margin-right: 6px;
+  .cabeca__lead {
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+    color: var(--tinta-2);
+    max-width: 52ch;
   }
-  @media (min-width: 1024px) {
-    .cabeca__grade {
-      grid-template-columns: 7fr 5fr;
-      align-items: end;
-      column-gap: clamp(40px, 5vw, 96px);
-    }
+  .cabeca__nota {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--tinta-2);
+    max-width: 70ch;
+  }
+  .cabeca__nota .selo-imagem {
+    flex: none;
   }
   .explorar {
     scroll-margin-top: calc(var(--topo) + 12px);
   }
 
-  .materiais__cabeca {
+  /* ——— Materiais ——— */
+  .materiais {
     display: grid;
-    gap: 12px;
-    margin-bottom: 28px;
+    gap: 32px;
+  }
+  .materiais__intro {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    justify-items: start;
+  }
+  .materiais__intro .botao {
+    margin-top: 8px;
+  }
+  /* no celular a chamada já está logo acima, junto do 3D */
+  @media (max-width: 1023px) {
+    .materiais__intro .botao {
+      display: none;
+    }
   }
   .materiais__lista {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    border-top: 1px solid var(--linha-forte);
   }
   .materiais__lista li {
     display: grid;
-    gap: 4px;
-    padding: 16px;
-    border-radius: var(--raio);
-    background: var(--creme);
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
-  .materiais__lista strong {
-    font-weight: 600;
-  }
-  .materiais__lista span:last-child {
-    color: var(--tinta-2);
+    grid-template-columns: 40px 1fr;
+    grid-template-areas: 'amostra nome' 'amostra uso';
+    column-gap: 16px;
+    row-gap: 2px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--linha);
   }
   .materiais__amostra {
-    width: 36px;
-    height: 36px;
+    grid-area: amostra;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--cor);
     box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
-    margin-bottom: 8px;
   }
+  .materiais__nome {
+    grid-area: nome;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .materiais__uso {
+    grid-area: uso;
+    font-size: 0.93rem;
+    color: var(--tinta-2);
+  }
+  @media (min-width: 1024px) {
+    .materiais {
+      grid-template-columns: 4fr 7fr;
+      column-gap: clamp(48px, 7vw, 120px);
+    }
+    .materiais__intro {
+      position: sticky;
+      top: calc(var(--topo) + 32px);
+    }
+    .materiais__lista {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 40px;
+    }
+  }
+
+  /* ——— Detalhes: faixa deslizante no celular, três colunas no desktop ——— */
   .detalhes {
-    display: grid;
-    gap: 20px;
-    margin-top: clamp(40px, 6vw, 72px);
+    padding-bottom: clamp(64px, 8vw, 120px);
   }
-  .detalhes figure {
+  .detalhes__titulo {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+    margin-bottom: 14px;
+  }
+  .detalhes__faixa {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--margem);
+    padding-inline: var(--margem);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .detalhes__faixa::-webkit-scrollbar {
+    display: none;
+  }
+  .detalhes__faixa li {
+    scroll-snap-align: start;
+  }
+  .detalhes__faixa figure {
     display: grid;
     gap: 10px;
   }
-  .detalhes :global(picture) {
+  .detalhes__faixa :global(picture) {
     display: block;
-    aspect-ratio: 4 / 5;
-    border-radius: var(--raio-g);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--raio);
     overflow: hidden;
     background: var(--papel-2);
   }
-  .detalhes :global(img) {
+  .detalhes__faixa :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  .detalhes figcaption {
-    font-size: 0.98rem;
+  .detalhes__faixa figcaption {
+    font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
   @media (min-width: 900px) {
-    .materiais__cabeca {
-      grid-template-columns: 1fr 1fr;
-      align-items: end;
-    }
-    .materiais__lista {
+    .detalhes__faixa {
+      max-width: var(--largura);
+      margin-inline: auto;
+      grid-auto-flow: row;
       grid-template-columns: repeat(3, 1fr);
-    }
-    .detalhes {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  @media (min-width: 1280px) {
-    .materiais__lista {
-      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+      overflow: visible;
     }
   }
 </style>
