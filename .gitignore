@@ -8,3 +8,8 @@ verificacao/
 cozinha_planejada.glb
 closet_nogueira*.glb
 sala_carvalho*.glb
+
+# Blender: fontes e backups (grandes, fora do repositório)
+*.blend
+*.blend1
+blender-originais/

@@ -102,6 +102,20 @@ Para acrescentar um ambiente:
 Pontos com a propriedade `animation` no GLB abrem a porta/gaveta correspondente quando selecionados
 e fecham ao sair do ponto. Os GLBs originais não vão para o repositório.
 
+### Editar os modelos no Blender
+
+Os `.blend` (fora do repositório) são a fonte. Scripts em `scripts/blender/`, rodados sem abrir a interface:
+
+```bash
+blender --background closet_nogueira.blend --python scripts/blender/closet_roupas.py -- --salvar
+blender --background closet_nogueira.blend --python scripts/blender/exportar_glb.py -- closet_nogueira.glb
+npm run modelo -- closet_nogueira.glb closet
+npm run renders -- closet
+```
+
+`exportar_glb.py` deixa de fora cenografia, câmeras e luzes e corrige a cor dos materiais
+textura × cor (nó Mix Multiply), que o exportador do Blender ignora.
+
 ## Verificação
 
 Com `npm run preview` rodando:

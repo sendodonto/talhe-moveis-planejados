@@ -90,7 +90,7 @@ export const modelos: ModeloSite[] = [
     lead: 'Gire, aproxime e toque nos números. Nos pontos da porta e da gaveta, veja os dois abrirem.',
     seo: 'Explore em 3D um closet em nogueira com porta de vidro fumê, ilha com gaveta de acessórios, sapateira e iluminação de LED embutida.',
     alt: 'Closet em L de nogueira: sapateira e prateleiras à esquerda, cabideiros e porta de vidro fumê ao fundo, ilha com gavetas no centro.',
-    tamanho: '3 MB',
+    tamanho: '3,6 MB',
     poster: { paisagem: closetInicial, retrato: closetRetrato, idPaisagem: 'closet-inicial', idRetrato: 'closet-inicial-retrato' },
     detalhes: [
       { src: closetIlha, legenda: 'Gaveta da ilha com divisórias', alt: 'Gaveta da ilha aberta com bandeja forrada e divisórias para acessórios.' },

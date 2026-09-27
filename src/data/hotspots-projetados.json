@@ -361,7 +361,7 @@
         "no": "HOTSPOT_Cabideiros",
         "x": 0.5795,
         "y": 0.3309,
-        "visivel": true
+        "visivel": false
       }
     ]
   },
@@ -403,7 +403,7 @@
         "no": "HOTSPOT_Cabideiros",
         "x": 0.6708,
         "y": 0.3366,
-        "visivel": true
+        "visivel": false
       }
     ]
   },
