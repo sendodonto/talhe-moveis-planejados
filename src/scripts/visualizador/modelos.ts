@@ -106,7 +106,7 @@ export const MODELOS: Record<string, ConfigModelo> = {
       az: 0.6,
       polar: 1.2,
       dist: 5.7,
-      largura: { paisagem: 5.0, retrato: 2.3, estreito: 1.85 },
+      largura: { paisagem: 5.0, retrato: 2.1, estreito: 1.6 },
     },
     limites: { ...LIMITES_PADRAO, alvoMin: [-1.3, 0.35, -1.2], alvoMax: [1.6, 2.4, 2.1] },
     solidos: [
@@ -136,7 +136,7 @@ export const MODELOS: Record<string, ConfigModelo> = {
       az: 0.6,
       polar: 1.18,
       dist: 6.2,
-      largura: { paisagem: 6.0, retrato: 2.6, estreito: 2.1 },
+      largura: { paisagem: 6.0, retrato: 2.35, estreito: 1.85 },
     },
     limites: { ...LIMITES_PADRAO, distMax: 11, alvoMin: [-1.9, 0.3, -1.2], alvoMax: [2.0, 2.4, 2.2] },
     solidos: [

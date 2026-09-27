@@ -356,6 +356,13 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
   aplicarOrbita(inicial);
   ajustar();
   cena.atualizarSombras();
+  // Compila todos os shaders antes do primeiro quadro: sem isso o navegador
+  // compila no meio da interação e o 3D trava nos primeiros giros.
+  try {
+    await renderer.compileAsync(cena.scene, camera);
+  } catch {
+    /* compilação paralela indisponível: compila no primeiro quadro */
+  }
   pipeline.render();
 
   return {

@@ -32,10 +32,11 @@ def material(nome, cor, rug, verniz=0.0):
     return m
 
 
+# sem verniz (clearcoat): custo alto no celular e invisível a essa distância
 couros = [
-    material('Couro castanho', (0.16, 0.07, 0.03), 0.38, 0.35),
-    material('Couro preto', (0.012, 0.011, 0.01), 0.32, 0.45),
-    material('Couro caramelo', (0.36, 0.17, 0.06), 0.42, 0.25),
+    material('Couro castanho', (0.16, 0.07, 0.03), 0.34),
+    material('Couro preto', (0.012, 0.011, 0.01), 0.3),
+    material('Couro caramelo', (0.36, 0.17, 0.06), 0.38),
 ]
 sola_mat = material('Sola de borracha', (0.02, 0.018, 0.016), 0.75)
 interior_mat = material('Forro de couro', (0.22, 0.14, 0.09), 0.6)
@@ -84,7 +85,7 @@ def base_z(t):
     return 0.012
 
 
-def anel(t, w, z0, h, n=22):
+def anel(t, w, z0, h, n=14):
     pts = []
     for k in range(n):
         a = 2 * math.pi * k / n
@@ -121,7 +122,7 @@ def objeto(nome, bm, mat):
 
 
 def sapato(couro, espelhar):
-    ts = [i / 30 for i in range(31)]
+    ts = [i / 14 for i in range(15)]
     # cabedal
     bm = bmesh.new()
     tubo(bm, [anel(t, largura(t), base_z(t), altura(t)) for t in ts])
@@ -133,8 +134,8 @@ def sapato(couro, espelhar):
         fundo = 0.0 if (t < 0.24 or t > 0.5) else 0.007 * math.sin(math.pi * (t - 0.24) / 0.26)
         topo = base_z(t) + 0.004
         pts = []
-        for k in range(16):
-            a = 2 * math.pi * k / 16
+        for k in range(10):
+            a = 2 * math.pi * k / 10
             c, s = math.cos(a), math.sin(a)
             y = (w / 2) * math.copysign(abs(c) ** 0.35, c)
             z = fundo if s < 0 else topo
@@ -144,7 +145,7 @@ def sapato(couro, espelhar):
     sola = objeto('Sapato • sola', bm, sola_mat)
     # abertura de calçar: forro escuro inclinado na parte de trás
     bm = bmesh.new()
-    bmesh.ops.create_circle(bm, cap_ends=True, segments=20, radius=1)
+    bmesh.ops.create_circle(bm, cap_ends=True, segments=12, radius=1)
     for v in bm.verts:
         v.co = Vector((0.018 + 0.05 * (v.co.x + 1), v.co.y * 0.026, 0))
     ab = objeto('Sapato • abertura', bm, interior_mat)

@@ -167,6 +167,15 @@ export async function montarCena(
     const materiais = Array.isArray(malha.material) ? malha.material : [malha.material];
     for (const m of materiais as THREE.MeshPhysicalMaterial[]) {
       if (m.map) m.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      // Fora do desktop, sheen (brilho de tecido) e clearcoat (verniz) somam várias
+      // etapas de luz por pixel e quase não aparecem na distância do ambiente.
+      if (qualidade !== 'alta') {
+        if (m.sheen > 0) {
+          m.sheen = 0;
+          m.roughness = Math.min(1, m.roughness + 0.05);
+        }
+        if (m.clearcoat > 0) m.clearcoat = 0;
+      }
       // Anisotropia depende de UV ou tangentes para orientar o escovado. As malhas
       // de inox não têm UV; sem essa orientação o three.js gera reflexo branco.
       const g = malha.geometry;

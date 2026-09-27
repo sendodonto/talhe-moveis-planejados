@@ -92,7 +92,7 @@ def camisa(p, i):
     queda = 0.055                 # inclinação do ombro
     T = 0.05 + random.uniform(-0.006, 0.008)  # volume (frente + costas + mangas)
     fase = random.uniform(0, math.tau)
-    N = 36
+    N = 24
 
     def perfil(t, th):
         """Ponto do corpo: t 0 (ombro) → 1 (barra), th ângulo ao redor."""
@@ -110,7 +110,7 @@ def camisa(p, i):
         return Vector((x, y, z))
 
     bm = bmesh.new()
-    tubo(bm, lambda t: [perfil(t, 2 * math.pi * k / N) for k in range(N)], 26, fechar_topo=True)
+    tubo(bm, lambda t: [perfil(t, 2 * math.pi * k / N) for k in range(N)], 14, fechar_topo=True)
 
     # Mangas: caem ao longo das laterais, do ombro até ~60% do corpo
     for lado in (-1, 1):
@@ -121,13 +121,13 @@ def camisa(p, i):
             cx = (T / 2 + 0.006) * (1 if lado > 0 else -1) * 0.35
             cz = topo - queda - 0.01 - L * t
             cy = y0 - lado * 0.012 * t
-            return [Vector((cx + r * 0.55 * math.sin(a), cy + r * math.cos(a), cz)) for a in (2 * math.pi * k / 12 for k in range(12))]
-        tubo(bm, anel_manga, 10, fechar_base=True)
+            return [Vector((cx + r * 0.55 * math.sin(a), cy + r * math.cos(a), cz)) for a in (2 * math.pi * k / 8 for k in range(8))]
+        tubo(bm, anel_manga, 6, fechar_base=True)
 
     # Gola: faixa em pé ao redor do pescoço
     def anel_gola(t):
         z = topo + 0.004 + 0.03 * t
-        return [Vector((0.022 * math.sin(a) + 0.004, 0.06 * math.cos(a), z - 0.008 * abs(math.cos(a)))) for a in (2 * math.pi * k / 20 for k in range(20))]
+        return [Vector((0.022 * math.sin(a) + 0.004, 0.06 * math.cos(a), z - 0.008 * abs(math.cos(a)))) for a in (2 * math.pi * k / 14 for k in range(14))]
     tubo(bm, anel_gola, 2)
 
     corpo = novo_objeto('Camisa pendurada', bm, [p['mat']])
@@ -139,7 +139,7 @@ def camisa(p, i):
     bm = bmesh.new()
     for k in range(6):
         z = topo - 0.06 - k * (H - 0.14) / 5
-        bmesh.ops.create_cone(bm, cap_ends=True, segments=10, radius1=0.0055, radius2=0.0055, depth=0.003,
+        bmesh.ops.create_cone(bm, cap_ends=True, segments=6, radius1=0.0055, radius2=0.0055, depth=0.003,
                               matrix=Matrix.Translation((T / 2 + 0.0015, 0, z)) @ Matrix.Rotation(math.pi / 2, 4, 'Y'))
     botoes = novo_objeto('Camisa • botões', bm, [metal], suave=False)
 
@@ -150,7 +150,7 @@ def camisa(p, i):
         y = u * (W / 2 - 0.02)
         z = topo + 0.012 - queda * abs(u) ** 1.15 * 0.95
         return [Vector((0.006 * math.sin(a), y, z + 0.009 * math.cos(a))) for a in (2 * math.pi * k / 8 for k in range(8))]
-    tubo(bm, anel_cabide, 16, fechar_topo=True, fechar_base=True)
+    tubo(bm, anel_cabide, 10, fechar_topo=True, fechar_base=True)
     cabide = novo_objeto('Cabide de madeira', bm, [madeira])
 
     bm = bmesh.new()
@@ -167,7 +167,7 @@ def camisa(p, i):
         n1 = Vector((1, 0, 0))
         n2 = tang.cross(n1).normalized()
         return [c + 0.0022 * (math.cos(b) * n1 + math.sin(b) * n2) for b in (2 * math.pi * k / 8 for k in range(8))]
-    tubo(bm, anel_gancho, 18, fechar_topo=True, fechar_base=True)
+    tubo(bm, anel_gancho, 10, fechar_topo=True, fechar_base=True)
     gancho = novo_objeto('Gancho do cabide', bm, [metal])
 
     # Posição no varão, com pequenas variações naturais

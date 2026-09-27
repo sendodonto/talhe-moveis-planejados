@@ -371,38 +371,38 @@
     "hotspots": [
       {
         "no": "HOTSPOT_Madeira",
-        "x": 0.4162,
-        "y": 0.3047,
+        "x": 0.4102,
+        "y": 0.2909,
         "visivel": true
       },
       {
         "no": "HOTSPOT_PortaVidro",
-        "x": 0.9065,
-        "y": 0.4282,
+        "x": 0.942,
+        "y": 0.4219,
         "visivel": true
       },
       {
         "no": "HOTSPOT_GavetaIlha",
-        "x": 0.4286,
-        "y": 0.6174,
+        "x": 0.4217,
+        "y": 0.6288,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Sapateira",
-        "x": 0.2151,
-        "y": 0.5135,
+        "x": 0.1919,
+        "y": 0.5146,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Iluminacao",
-        "x": 0.7544,
-        "y": 0.2832,
+        "x": 0.7754,
+        "y": 0.2653,
         "visivel": false
       },
       {
         "no": "HOTSPOT_Cabideiros",
-        "x": 0.6708,
-        "y": 0.3366,
+        "x": 0.6838,
+        "y": 0.3241,
         "visivel": false
       }
     ]
@@ -581,38 +581,38 @@
     "hotspots": [
       {
         "no": "HOTSPOT_Painel",
-        "x": 0.3883,
-        "y": 0.2784,
+        "x": 0.3789,
+        "y": 0.2599,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Rack",
-        "x": 0.4355,
-        "y": 0.465,
+        "x": 0.43,
+        "y": 0.4619,
         "visivel": true
       },
       {
         "no": "HOTSPOT_HomeOffice",
-        "x": 0.7701,
-        "y": 0.5035,
+        "x": 0.7982,
+        "y": 0.5039,
         "visivel": false
       },
       {
         "no": "HOTSPOT_Cabos",
-        "x": 0.8881,
-        "y": 0.4827,
+        "x": 0.9276,
+        "y": 0.4809,
         "visivel": true
       },
       {
         "no": "HOTSPOT_Nichos",
-        "x": 0.9894,
-        "y": 0.3502,
-        "visivel": true
+        "x": 1.0468,
+        "y": 0.3326,
+        "visivel": false
       },
       {
         "no": "HOTSPOT_Acabamentos",
-        "x": 0.5246,
-        "y": 0.4827,
+        "x": 0.5268,
+        "y": 0.4811,
         "visivel": true
       }
     ]
