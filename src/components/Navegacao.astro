@@ -14,12 +14,13 @@ const { sobreFoto = false } = Astro.props;
 
 const links = [
   { href: '/projetos', rotulo: 'Ambientes' },
-  { href: '/projetos/cozinha-em-u', rotulo: 'Cozinha em 3D' },
+  { href: '/projetos#em-3d', rotulo: 'Em 3D' },
   { href: '/sobre', rotulo: 'Como trabalhamos' },
   { href: '/orcamento', rotulo: 'Orçamento' },
 ];
 const atual = semBase(Astro.url.pathname).replace(/\/$/, '') || '/';
-const ativo = (href: string) => (href === '/projetos' ? atual === '/projetos' : atual.startsWith(href));
+const ativo = (href: string) =>
+  href === '/projetos' ? atual === '/projetos' : href === '/projetos#em-3d' ? atual.startsWith('/projetos/') : atual.startsWith(href);
 const naPaginaOrcamento = atual.startsWith('/orcamento');
 ---
 

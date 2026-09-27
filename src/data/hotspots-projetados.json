@@ -322,5 +322,425 @@
         "visivel": true
       }
     ]
+  },
+  "closet-inicial": {
+    "largura": 1600,
+    "altura": 900,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Madeira",
+        "x": 0.4605,
+        "y": 0.2953,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_PortaVidro",
+        "x": 0.6845,
+        "y": 0.4276,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_GavetaIlha",
+        "x": 0.4682,
+        "y": 0.6161,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Sapateira",
+        "x": 0.3689,
+        "y": 0.5138,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.6169,
+        "y": 0.2787,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabideiros",
+        "x": 0.5795,
+        "y": 0.3309,
+        "visivel": true
+      }
+    ]
+  },
+  "closet-inicial-retrato": {
+    "largura": 800,
+    "altura": 1000,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Madeira",
+        "x": 0.4162,
+        "y": 0.3047,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_PortaVidro",
+        "x": 0.9065,
+        "y": 0.4282,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_GavetaIlha",
+        "x": 0.4286,
+        "y": 0.6174,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Sapateira",
+        "x": 0.2151,
+        "y": 0.5135,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.7544,
+        "y": 0.2832,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabideiros",
+        "x": 0.6708,
+        "y": 0.3366,
+        "visivel": true
+      }
+    ]
+  },
+  "closet-ilha": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Madeira",
+        "x": 0.0076,
+        "y": -0.7963,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_PortaVidro",
+        "x": 1.9734,
+        "y": -0.4754,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_GavetaIlha",
+        "x": 0.5147,
+        "y": 0.4063,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Sapateira",
+        "x": -0.5568,
+        "y": 0.0394,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 1.3937,
+        "y": -1.0465,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabideiros",
+        "x": 0.9772,
+        "y": -0.7299,
+        "visivel": false
+      }
+    ]
+  },
+  "closet-armarios": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Madeira",
+        "x": -0.2969,
+        "y": 0.3122,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_PortaVidro",
+        "x": 0.7191,
+        "y": 0.467,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_GavetaIlha",
+        "x": -1.0318,
+        "y": 1.0139,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Sapateira",
+        "x": -1.1407,
+        "y": 0.7405,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 0.3608,
+        "y": 0.1637,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cabideiros",
+        "x": 0.2136,
+        "y": 0.3353,
+        "visivel": false
+      }
+    ]
+  },
+  "closet-sapateira": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Madeira",
+        "x": 1.0557,
+        "y": 0.193,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_PortaVidro",
+        "x": 8.4428,
+        "y": 0.8281,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_GavetaIlha",
+        "x": -0.2826,
+        "y": 1.4141,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Sapateira",
+        "x": 0.0587,
+        "y": 0.7277,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Iluminacao",
+        "x": 2.9644,
+        "y": -0.3787,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabideiros",
+        "x": 2.1648,
+        "y": 0.1761,
+        "visivel": false
+      }
+    ]
+  },
+  "sala-inicial": {
+    "largura": 1600,
+    "altura": 900,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Painel",
+        "x": 0.449,
+        "y": 0.2754,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Rack",
+        "x": 0.4708,
+        "y": 0.4647,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_HomeOffice",
+        "x": 0.6177,
+        "y": 0.5034,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cabos",
+        "x": 0.6698,
+        "y": 0.4832,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Nichos",
+        "x": 0.7072,
+        "y": 0.359,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Acabamentos",
+        "x": 0.5111,
+        "y": 0.4827,
+        "visivel": true
+      }
+    ]
+  },
+  "sala-inicial-retrato": {
+    "largura": 800,
+    "altura": 1000,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Painel",
+        "x": 0.3883,
+        "y": 0.2784,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Rack",
+        "x": 0.4355,
+        "y": 0.465,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_HomeOffice",
+        "x": 0.7701,
+        "y": 0.5035,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabos",
+        "x": 0.8881,
+        "y": 0.4827,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Nichos",
+        "x": 0.9894,
+        "y": 0.3502,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Acabamentos",
+        "x": 0.5246,
+        "y": 0.4827,
+        "visivel": true
+      }
+    ]
+  },
+  "sala-rack": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Painel",
+        "x": -0.004,
+        "y": -0.2752,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Rack",
+        "x": 0.397,
+        "y": 0.6072,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_HomeOffice",
+        "x": 2.9572,
+        "y": 0.7149,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabos",
+        "x": 3.1216,
+        "y": 0.5123,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Nichos",
+        "x": 5.7615,
+        "y": -0.6406,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Acabamentos",
+        "x": 0.9362,
+        "y": 0.6656,
+        "visivel": true
+      }
+    ]
+  },
+  "sala-homeoffice": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Painel",
+        "x": -1.3852,
+        "y": -0.1031,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Rack",
+        "x": -0.9796,
+        "y": 0.6345,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_HomeOffice",
+        "x": 0.3952,
+        "y": 0.6873,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Cabos",
+        "x": 0.7803,
+        "y": 0.5203,
+        "visivel": true
+      },
+      {
+        "no": "HOTSPOT_Nichos",
+        "x": 1.3127,
+        "y": -0.0715,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Acabamentos",
+        "x": -0.607,
+        "y": 0.67,
+        "visivel": false
+      }
+    ]
+  },
+  "sala-estar": {
+    "largura": 1200,
+    "altura": 1500,
+    "hotspots": [
+      {
+        "no": "HOTSPOT_Painel",
+        "x": 1.0628,
+        "y": 0.0667,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Rack",
+        "x": 1.0243,
+        "y": 0.4602,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_HomeOffice",
+        "x": 1.9278,
+        "y": 0.6783,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Cabos",
+        "x": 2.5924,
+        "y": 0.7054,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Nichos",
+        "x": 3.8043,
+        "y": 0.0123,
+        "visivel": false
+      },
+      {
+        "no": "HOTSPOT_Acabamentos",
+        "x": 1.1942,
+        "y": 0.5214,
+        "visivel": false
+      }
+    ]
   }
 }

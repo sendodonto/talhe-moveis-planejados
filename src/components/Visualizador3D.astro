@@ -1,33 +1,32 @@
 ---
-// Visualizador da cozinha: pôster (imagem gerada do próprio GLB) com os pontos
-// projetados nas posições reais + 3D sob demanda + lista acessível de pontos.
-// Sem WebGL ou sem JavaScript, a imagem e os textos continuam explicando a cozinha.
+// Visualizador 3D de um ambiente: pôster (imagem gerada do próprio GLB) com os
+// pontos projetados nas posições reais + 3D sob demanda + lista acessível.
+// Sem WebGL ou sem JavaScript, a imagem e os textos continuam explicando o ambiente.
 import { getImage } from 'astro:assets';
 import Icone from './Icone.astro';
 import { u } from '../lib/url';
-import { pontosDaCozinha, projecaoEm, URL_MODELO } from '../lib/hotspots';
-import retrato from '../assets/renders/vista-inicial-retrato.png';
-import paisagem from '../assets/renders/vista-inicial.png';
+import { pontosDe, projecaoEm } from '../lib/hotspots';
+import { MODELOS } from '../scripts/visualizador/modelos';
+import type { ModeloSite } from '../content/modelos';
 
 interface Props {
+  modelo: ModeloSite;
   id?: string;
   /** 'desktop' = carrega sozinho no desktop quando aparece na tela. */
   auto?: boolean;
   ctaHref?: string;
   ctaTexto?: string;
-  tamanhoModelo?: string;
 }
-const {
-  id = 'cozinha3d',
-  auto = false,
-  ctaHref = '/orcamento?ambiente=cozinha&referencia=cozinha-em-u',
-  ctaTexto = 'Quero um projeto parecido',
-  tamanhoModelo = '3 MB',
-} = Astro.props;
+const { modelo, id = `v3d-${modelo.id}`, auto = false } = Astro.props;
+const ctaHref = Astro.props.ctaHref ?? `/orcamento?ambiente=${modelo.ambiente}&referencia=${modelo.slug}`;
+const ctaTexto = Astro.props.ctaTexto ?? modelo.cta;
+const tamanhoModelo = modelo.tamanho;
+const retrato = modelo.poster.retrato;
+const paisagem = modelo.poster.paisagem;
 
-const pontos = pontosDaCozinha();
-const noRetrato = new Map(projecaoEm('vista-inicial-retrato').map((p) => [p.no, p]));
-const noPaisagem = new Map(projecaoEm('vista-inicial').map((p) => [p.no, p]));
+const pontos = pontosDe(modelo);
+const noRetrato = new Map(projecaoEm(modelo.poster.idRetrato, modelo).map((p) => [p.no, p]));
+const noPaisagem = new Map(projecaoEm(modelo.poster.idPaisagem, modelo).map((p) => [p.no, p]));
 
 async function srcset(src: ImageMetadata, larguras: number[], format: 'avif' | 'webp') {
   const imgs = await Promise.all(larguras.map((w) => getImage({ src, width: w, format, quality: format === 'avif' ? 60 : 78 })));
@@ -42,16 +41,18 @@ const fontes = {
 };
 const fallback = await getImage({ src: retrato, width: 800, format: 'webp', quality: 78 });
 
+const config = MODELOS[modelo.id];
 const dados = {
-  modelo: u(URL_MODELO),
-  pontos: pontos.map(({ no, numero, titulo, vista }) => ({ no, numero, titulo, vista })),
+  modelo: u(config.arquivo),
+  config,
+  pontos: pontos.map(({ no, numero, titulo, vista, animacao }) => ({ no, numero, titulo, vista, animacao })),
 };
 ---
 
-<section class="v3d" data-v3d data-estado="ocioso" data-auto={auto ? 'desktop' : undefined} aria-label="Cozinha em 3D">
+<section class="v3d" data-v3d data-estado="ocioso" data-auto={auto ? 'desktop' : undefined} aria-label={`${modelo.nome} em 3D`}>
   <script type="application/json" data-v3d-dados set:html={JSON.stringify(dados)} />
   <div class="v3d__grade">
-    <div class="v3d__palco" data-v3d-palco tabindex="0" role="group" aria-roledescription="visualizador 3D" aria-label="Cozinha em U. Imagem e modelo 3D." aria-describedby={`${id}-teclado`}>
+    <div class="v3d__palco" data-v3d-palco tabindex="0" role="group" aria-roledescription="visualizador 3D" aria-label={`${modelo.nome}. Imagem e modelo 3D.`} aria-describedby={`${id}-teclado`}>
       <picture class="v3d__poster">
         <source media={MQ} type="image/avif" srcset={fontes.pAvif} sizes="(min-width: 1440px) 1330px, 94vw" />
         <source media={MQ} type="image/webp" srcset={fontes.pWebp} sizes="(min-width: 1440px) 1330px, 94vw" />
@@ -62,7 +63,7 @@ const dados = {
           sizes="100vw"
           width="800"
           height="1000"
-          alt="Cozinha em U vista da entrada: aéreos grafite até o teto, faixa amadeirada com LED, bancada de granito preto com cuba sob a janela e península com ripado de madeira."
+          alt={modelo.alt}
           loading="lazy"
           decoding="async"
         />
@@ -193,10 +194,10 @@ const dados = {
 
 <style is:global>
   /* ─────────────────────────────────────────────────────────────
-     Visualizador da cozinha
+     Visualizador 3D
      Celular: pôster 4:5 limpo, pontos em fichas; 3D abre em tela cheia.
      Desktop (≥1024): palco 16:9 com painel de pontos flutuando à direita
-     e controles numa pílula embaixo; a câmera centraliza a cozinha na área livre.
+     e controles numa pílula embaixo; a câmera centraliza o ambiente na área livre.
      ───────────────────────────────────────────────────────────── */
   .v3d {
     /* mesma cor do estúdio renderizado (topo → piso) */

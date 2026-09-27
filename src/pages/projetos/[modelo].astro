@@ -2,54 +2,46 @@
 import { u } from '../../lib/url';
 import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import Cozinha3D from '../../components/Cozinha3D.astro';
+import Visualizador3D from '../../components/Visualizador3D.astro';
 import Icone from '../../components/Icone.astro';
-import { materiais } from '../../content/cozinha';
+import { modelos, type ModeloSite } from '../../content/modelos';
 import { empresa } from '../../config/empresa';
-import vista from '../../assets/renders/vista-inicial.png';
-import dBancada from '../../assets/renders/detalhe-bancada.png';
-import dRipado from '../../assets/renders/detalhe-ripado.png';
-import dLed from '../../assets/renders/detalhe-led.png';
 
-const orcamento = '/orcamento?ambiente=cozinha&referencia=cozinha-em-u';
-const detalhes = [
-  { src: dBancada, legenda: 'Granito preto, cooktop e forno alinhados', alt: 'Bancada de granito preto polido com cooktop de embutir e forno de inox abaixo.' },
-  { src: dLed, legenda: 'Faixa amadeirada com LED quente', alt: 'Faixa de portas amadeiradas com fita de LED embutida iluminando o revestimento branco.' },
-  { src: dRipado, legenda: 'Ripado vertical na península', alt: 'Ripas verticais de madeira na face externa da península, sob o tampo de granito.' },
-];
+export function getStaticPaths() {
+  return modelos.map((modelo) => ({ params: { modelo: modelo.slug }, props: { modelo } }));
+}
+
+const { modelo } = Astro.props as { modelo: ModeloSite };
+const orcamento = `/orcamento?ambiente=${modelo.ambiente}&referencia=${modelo.slug}`;
+const outros = modelos.filter((m) => m.id !== modelo.id);
 ---
 
-<Base
-  titulo="Cozinha em U em 3D"
-  descricao="Explore em 3D uma cozinha em U com armários grafite até o teto, faixa amadeirada com LED, bancada de granito preto e península ripada."
-  imagem={vista}
-  imagemAlt="Cozinha em U com armários grafite, faixa de madeira com LED e península ripada."
->
+<Base titulo={`${modelo.nome} em 3D`} descricao={modelo.seo} imagem={modelo.poster.paisagem} imagemAlt={modelo.alt}>
   <header class="faixa cabeca">
     <nav aria-label="Trilha" class="trilha">
-      <a href={u('/projetos')}>Ambientes</a> <span aria-hidden="true">/</span> <span aria-current="page">Cozinha em U</span>
+      <a href={u('/projetos')}>Ambientes</a> <span aria-hidden="true">/</span> <span aria-current="page">{modelo.nome}</span>
     </nav>
-    <h1 class="t-destaque">Cozinha em U: grafite, madeira e granito preto.</h1>
-    <p class="cabeca__lead">Gire, aproxime e toque nos números para ver cada decisão do projeto.</p>
+    <h1 class="t-destaque">{modelo.titulo}</h1>
+    <p class="cabeca__lead">{modelo.lead}</p>
     <p class="cabeca__nota">
       <span class="selo-imagem">Estudo 3D</span>
-      <span>Reconstrução a partir de uma referência visual, com medidas aproximadas. Não é uma obra executada pela {empresa.nome}.</span>
+      <span>{modelo.aviso} pela {empresa.nome}.</span>
     </p>
   </header>
 
-  <section class="faixa explorar" id="explorar" aria-label="Explorar a cozinha">
-    <Cozinha3D id="cozinha-pagina" auto ctaHref={orcamento} ctaTexto="Quero uma cozinha assim" />
+  <section class="faixa explorar" id="explorar" aria-label={`Explorar: ${modelo.nome}`}>
+    <Visualizador3D modelo={modelo} id="v3d-pagina" auto />
   </section>
 
   <section class="faixa secao materiais" id="materiais" aria-labelledby="materiais-titulo">
     <div class="materiais__intro">
-      <h2 class="t-destaque" id="materiais-titulo">O que compõe esta cozinha.</h2>
-      <p class="t-texto">Seis materiais, cada um com uma função. No seu projeto, cada padrão é escolhido com amostra física na mão.</p>
-      <a class="botao" href={u(orcamento)}>Quero uma cozinha assim <Icone nome="seta" /></a>
+      <h2 class="t-destaque" id="materiais-titulo">O que compõe este ambiente.</h2>
+      <p class="t-texto">{modelo.materiais.length} materiais, cada um com uma função. No seu projeto, cada padrão é escolhido com amostra física na mão.</p>
+      <a class="botao" href={u(orcamento)}>{modelo.cta} <Icone nome="seta" /></a>
     </div>
     <ul role="list" class="materiais__lista">
       {
-        materiais.map((m) => (
+        modelo.materiais.map((m) => (
           <li>
             <span class="materiais__amostra" style={`--cor:${m.cor}`} aria-hidden="true" />
             <span class="materiais__nome">{m.nome}</span>
@@ -66,12 +58,30 @@ const detalhes = [
     </div>
     <ul role="list" class="detalhes__faixa">
       {
-        detalhes.map((d) => (
+        modelo.detalhes.map((d) => (
           <li>
             <figure>
               <Picture src={d.src} alt={d.alt} widths={[480, 800, 1200]} sizes="(min-width: 900px) 30vw, 82vw" formats={['avif', 'webp']} fallbackFormat="webp" />
               <figcaption>{d.legenda}</figcaption>
             </figure>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="faixa outros" aria-labelledby="outros-titulo">
+    <h2 class="outros__titulo" id="outros-titulo">Explore outros ambientes em 3D</h2>
+    <ul role="list" class="outros__lista">
+      {
+        outros.map((m) => (
+          <li>
+            <a href={u(`/projetos/${m.slug}`)}>
+              <Picture src={m.poster.paisagem} alt="" widths={[480, 800]} sizes="(min-width: 900px) 40vw, 90vw" formats={['avif', 'webp']} fallbackFormat="webp" />
+              <span class="outros__nome">
+                {m.nome} <Icone nome="seta" />
+              </span>
+            </a>
           </li>
         ))
       }
@@ -190,7 +200,67 @@ const detalhes = [
 
   /* ——— Detalhes: faixa deslizante no celular, três colunas no desktop ——— */
   .detalhes {
+    padding-bottom: clamp(56px, 7vw, 96px);
+  }
+
+  /* ——— Outros ambientes ——— */
+  .outros {
     padding-bottom: clamp(64px, 8vw, 120px);
+  }
+  .outros__titulo {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+    margin-bottom: 14px;
+  }
+  .outros__lista {
+    display: grid;
+    gap: 14px;
+  }
+  .outros__lista a {
+    display: grid;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .outros__lista :global(picture) {
+    display: block;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--raio);
+    overflow: hidden;
+    background: #eae4dd;
+  }
+  .outros__lista :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+  .outros__lista a:hover :global(img) {
+    transform: scale(1.03);
+  }
+  .outros__nome {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 650;
+    font-size: 1.1rem;
+    letter-spacing: -0.015em;
+  }
+  .outros__nome :global(svg) {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s var(--ease);
+  }
+  .outros__lista a:hover .outros__nome :global(svg) {
+    transform: translateX(4px);
+  }
+  @media (min-width: 900px) {
+    .outros__lista {
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
   }
   .detalhes__titulo {
     font-size: 0.8rem;

@@ -1,28 +1,74 @@
 // Página usada apenas por scripts/gerar-renders.mjs (não faz parte do site).
+// Renderiza qualquer modelo de src/scripts/visualizador/modelos.ts com a mesma
+// luz do visualizador, opcionalmente com portas/gavetas na posição aberta.
 import * as THREE from 'three';
 import { vistaInicial, posicaoDe } from '../../src/scripts/visualizador/camera';
-import { configurarRenderer, montarCena, criarPipeline, type Pipeline } from '../../src/scripts/visualizador/cena';
+import { configurarRenderer, montarCena, criarPipeline, type CenaMontada, type Pipeline } from '../../src/scripts/visualizador/cena';
+import { MODELOS } from '../../src/scripts/visualizador/modelos';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: true });
 configurarRenderer(renderer, 'alta');
 document.body.appendChild(renderer.domElement);
-const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 50);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 60);
 
-const pronto = montarCena(renderer, '/public/modelos/cozinha.glb', 'alta');
+const cenas = new Map<string, Promise<{ cena: CenaMontada; pipeline?: Pipeline; mixer: THREE.AnimationMixer }>>();
+function carregar(id: string) {
+  if (!cenas.has(id)) {
+    const cfg = MODELOS[id];
+    cenas.set(
+      id,
+      montarCena(renderer, '/public' + cfg.arquivo, cfg, 'alta').then((cena) => ({ cena, mixer: new THREE.AnimationMixer(cena.modelo) })),
+    );
+  }
+  return cenas.get(id)!;
+}
 
-let pipeline: Pipeline | undefined;
-interface Vista { w: number; h: number; escala?: number; desloc?: number; preset?: string; pos?: number[]; alvo: number[]; fov: number; az?: number; polar?: number; dist?: number }
+interface Vista {
+  w: number;
+  h: number;
+  modelo?: string;
+  /** Animações a mostrar no último quadro (porta aberta, gaveta aberta). */
+  abertas?: string[];
+  escala?: number;
+  desloc?: number;
+  preset?: string;
+  pos?: number[];
+  alvo: number[];
+  fov: number;
+  az?: number;
+  polar?: number;
+  dist?: number;
+}
 
 (window as any).renderizar = async (v: Vista) => {
-  const cena = await pronto;
+  const id = v.modelo ?? 'cozinha';
+  const item = await carregar(id);
+  const { cena, mixer } = item;
+  const cfg = MODELOS[id];
+
+  // Pose das animações: tudo fechado, depois abre as pedidas no último quadro.
+  mixer.stopAllAction();
+  mixer.update(0);
+  for (const nome of v.abertas ?? []) {
+    const clip = cena.animacoes.find((c) => c.name === nome);
+    if (!clip) throw new Error(`Animação não encontrada: ${nome}`);
+    const a = mixer.clipAction(clip);
+    a.setLoop(THREE.LoopOnce, 1);
+    a.clampWhenFinished = true;
+    a.reset().play();
+  }
+  mixer.update(10);
+  cena.modelo.updateMatrixWorld(true);
+
   const d = Math.round((v.desloc ?? 0) * v.w);
   if (v.preset === 'inicial') {
-    const o = vistaInicial((v.w - d) / v.h);
+    const o = vistaInicial((v.w - d) / v.h, cfg);
     v = { ...v, fov: o.fov, alvo: o.alvo, pos: posicaoDe(o).toArray() };
   }
   const escala = v.escala ?? 2;
   renderer.setPixelRatio(escala);
-  pipeline ??= criarPipeline(renderer, cena.scene, camera, 'alta', { repouso: escala, movimento: escala });
+  item.pipeline ??= criarPipeline(renderer, cena.scene, camera, 'alta', { repouso: escala, movimento: escala });
+  const pipeline = item.pipeline;
   pipeline.setSize(v.w, v.h);
   renderer.domElement.style.width = v.w + 'px';
   renderer.domElement.style.height = v.h + 'px';
@@ -55,4 +101,4 @@ interface Vista { w: number; h: number; escala?: number; desloc?: number; preset
   });
   return { hotspots };
 };
-(window as any).estudioPronto = pronto.then(() => true);
+(window as any).estudioPronto = carregar('cozinha').then(() => true);

@@ -16,7 +16,7 @@ const executablePath = [
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ].find((p) => p && existsSync(p));
 
-const paginas = ['/', '/projetos', '/projetos/cozinha-em-u', '/sobre', '/orcamento', '/privacidade', '/nao-existe'];
+const paginas = ['/', '/projetos', '/projetos/cozinha-em-u', '/projetos/closet-nogueira', '/projetos/sala-carvalho', '/sobre', '/orcamento', '/privacidade', '/nao-existe'];
 const telas = {
   celular: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
   desktop: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },

@@ -6,3 +6,5 @@ verificacao/
 .impeccable/build/
 # modelo original (12 MB). O site usa a cópia otimizada em public/modelos/.
 cozinha_planejada.glb
+closet_nogueira*.glb
+sala_carvalho*.glb

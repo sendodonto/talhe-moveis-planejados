@@ -7,6 +7,8 @@
 
 const REFERENCIAS: Record<string, string> = {
   'cozinha-em-u': 'Vi a cozinha em U (grafite, madeira e granito) em 3D no site e quero algo parecido.',
+  'closet-nogueira': 'Vi o Closet Nogueira em 3D no site e quero algo parecido.',
+  'sala-carvalho': 'Vi a Sala Carvalho em 3D no site e quero algo parecido.',
 };
 
 export function iniciarFormulario(form: HTMLFormElement) {

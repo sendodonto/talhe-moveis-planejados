@@ -4,7 +4,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { computeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 import { configurarRenderer, montarCena, criarPipeline, type Qualidade, type HotspotModelo } from './cena';
-import { vistaInicial, posicaoDe, LIMITES, type Orbita } from './camera';
+import { vistaInicial, posicaoDe, type Orbita } from './camera';
+import type { ConfigModelo } from './modelos';
 
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -19,6 +20,7 @@ export interface PosicaoMarcador {
 export interface OpcoesMotor {
   container: HTMLElement;
   modelo: string;
+  config: ConfigModelo;
   qualidade: Qualidade;
   reduzirMovimento: boolean;
   vistas: Record<string, Orbita>;
@@ -36,24 +38,15 @@ export interface Motor {
   aproximar(fator: number): void;
   girar(dAz: number, dPolar: number): void;
   permitirRoda(sim: boolean): void;
+  /** Abre a porta/gaveta ligada ao ponto (ou fecha a que estiver aberta, com null). */
+  animar(nome: string | null): void;
   /** Área do quadro coberta pela interface (px): a câmera centraliza a cozinha no resto. */
   definirMargens(m: { direita?: number; topo?: number; base?: number }): void;
   pausar(sim: boolean): void;
   dispose(): void;
 }
 
-// Volumes sólidos da marcenaria e das paredes (m). A câmera é empurrada para fora
-// deles, para nunca atravessar armários, península ou geladeira.
-const SOLIDOS: Array<[number, number, number, number, number, number]> = [
-  [-1.6, 0, -1.6, -0.85, 0.95, 1.0], // bancada da pia (parede da janela)
-  [-1.6, 0, -1.6, 1.5, 0.95, -0.9], // bancada do fundo
-  [0.72, 0, -0.95, 1.5, 0.95, 1.8], // península
-  [-1.6, 1.58, -1.6, -1.1, 2.8, 1.12], // aéreos laterais
-  [-1.6, 1.58, -1.6, 1.5, 2.8, -1.04], // aéreos do fundo
-  [-1.6, 0, 0.95, -0.74, 2.05, 1.75], // geladeira
-  [-3, -1, -3, -1.46, 3, 3], // parede da janela
-  [-3, -1, -3, 3, 3, -1.5], // parede do fundo
-];
+// A câmera é empurrada para fora dos volumes sólidos de cada ambiente (modelos.ts).
 const MARGEM = 0.14;
 
 export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
@@ -74,7 +67,9 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
   canvas.setAttribute('aria-hidden', 'true');
   o.container.appendChild(canvas);
 
-  const cena = await montarCena(renderer, o.modelo, o.qualidade, o.aoProgredir).catch((e) => {
+  const LIMITES = o.config.limites;
+  const SOLIDOS = o.config.solidos;
+  const cena = await montarCena(renderer, o.modelo, o.config, o.qualidade, o.aoProgredir).catch((e) => {
     renderer.dispose();
     canvas.remove();
     throw e;
@@ -108,6 +103,35 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
   let naVistaInicial = true;
   let transicao: null | { t0: number; dur: number; de: Orbita; para: Orbita } = null;
 
+  // ——— Animações do GLB (portas, gavetas): tocam uma vez, param no último
+  // quadro e voltam tocando ao contrário. Nunca duas instâncias da mesma. ———
+  const mixer = new THREE.AnimationMixer(cena.modelo);
+  const acoes = new Map<string, THREE.AnimationAction>();
+  for (const clip of cena.animacoes) {
+    const acao = mixer.clipAction(clip);
+    acao.setLoop(THREE.LoopOnce, 1);
+    acao.clampWhenFinished = true;
+    acoes.set(clip.name, acao);
+  }
+  let aberta: string | null = null;
+  let relogio = 0;
+  const animando = () => [...acoes.values()].some((a) => a.isRunning());
+  function tocar(nome: string, abrir: boolean) {
+    const acao = acoes.get(nome);
+    if (!acao) return;
+    const vel = o.reduzirMovimento ? 4 : 1;
+    // Primeira vez: agenda a ação. Depois, a mesma ação só inverte o sentido;
+    // ao chegar no fim (ou no começo) ela para no quadro e aguarda.
+    if (!acao.isScheduled()) {
+      if (!abrir) return;
+      acao.reset();
+      acao.play();
+    }
+    acao.paused = false;
+    acao.timeScale = abrir ? vel : -vel;
+  }
+
+
   const pedirQuadro = () => {
     if (pausado || quadroPedido) return;
     quadroPedido = true;
@@ -138,6 +162,15 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
       else continuar = true;
     }
     if (controls.update()) continuar = true;
+    if (acoes.size) {
+      const dt = relogio ? Math.min(0.05, (agora - relogio) / 1000) : 0;
+      relogio = agora;
+      if (animando()) {
+        mixer.update(dt);
+        cena.atualizarSombras();
+        continuar = true;
+      } else relogio = 0;
+    }
     // Em movimento: quadro rápido. Parado: quadro completo, com oclusão de ambiente.
     pipeline.render(!continuar);
     atualizarMarcadores(agora, continuar);
@@ -163,7 +196,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     const alvo = controls.target;
     // Se o alvo sair da caixa, alvo e câmera recuam juntos (sem salto de ângulo).
     const antes = tmp.copy(alvo);
-    alvo.clamp(LIMITES.alvoMin, LIMITES.alvoMax);
+    alvo.clamp(new THREE.Vector3(...LIMITES.alvoMin), new THREE.Vector3(...LIMITES.alvoMax));
     camera.position.sub(antes.sub(alvo));
     const p = camera.position;
     for (const [x0, y0, z0, x1, y1, z1] of SOLIDOS) {
@@ -298,7 +331,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
       camera.clearViewOffset();
     }
     if (naVistaInicial && !transicao) {
-      const vi = vistaInicial((largura - d) / altura);
+      const vi = vistaInicial((largura - d) / altura, o.config);
       camera.fov = vi.fov;
       aplicarOrbita(vi);
     }
@@ -318,7 +351,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     o.aoPerderContexto();
   });
 
-  const inicial = vistaInicial(1.6);
+  const inicial = vistaInicial(1.6, o.config);
   camera.fov = inicial.fov;
   aplicarOrbita(inicial);
   ajustar();
@@ -342,7 +375,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     },
     vistaInicial() {
       naVistaInicial = true;
-      const vi = vistaInicial(aspectoLivre());
+      const vi = vistaInicial(aspectoLivre(), o.config);
       if (camera.fov !== vi.fov) {
         camera.fov = vi.fov;
         camera.updateProjectionMatrix();
@@ -372,6 +405,13 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     permitirRoda(sim) {
       controls.enableZoom = sim;
     },
+    animar(nome) {
+      if (aberta && aberta !== nome) tocar(aberta, false);
+      if (nome && acoes.has(nome)) tocar(nome, true);
+      aberta = nome && acoes.has(nome) ? nome : null;
+      relogio = 0;
+      pedirQuadro();
+    },
     definirMargens(m) {
       const antes = margens.direita;
       Object.assign(margens, m);
@@ -384,6 +424,7 @@ export async function criarMotor(o: OpcoesMotor): Promise<Motor> {
     },
     dispose() {
       pausado = true;
+      mixer.stopAllAction();
       ro.disconnect();
       controls.dispose();
       pipeline.dispose();

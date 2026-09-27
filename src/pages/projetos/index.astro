@@ -6,6 +6,7 @@ import Icone from '../../components/Icone.astro';
 import CardAmbiente from '../../components/CardAmbiente.astro';
 import { ambientes, outros, creditoDe } from '../../content/ambientes';
 import { empresa } from '../../config/empresa';
+import { modelos, modeloPorAmbiente } from '../../content/modelos';
 ---
 
 <Base
@@ -16,6 +17,31 @@ import { empresa } from '../../config/empresa';
     <h1 class="t-display">Um projeto para <em>cada ambiente</em></h1>
     <p class="t-lead">Escolha por onde começar. Em cada ambiente, o que costuma entrar no projeto — e o convite para desenhar o seu.</p>
   </header>
+
+  <section class="faixa em3d" id="em-3d" aria-labelledby="em3d-titulo">
+    <div class="em3d__cabeca">
+      <h2 class="t-titulo" id="em3d-titulo">Explore em 3D</h2>
+      <p class="t-texto">Gire, aproxime e toque nos pontos. No closet e na sala, portas e gavetas abrem de verdade.</p>
+    </div>
+    <ul role="list" class="em3d__lista">
+      {
+        modelos.map((m) => (
+          <li>
+            <a href={u(`/projetos/${m.slug}`)}>
+              <div class="em3d__imagem">
+                <Picture src={m.poster.paisagem} alt="" widths={[480, 800, 1100]} sizes="(min-width: 900px) 30vw, 90vw" formats={['avif', 'webp']} fallbackFormat="webp" />
+                <span class="selo-imagem">Estudo 3D</span>
+              </div>
+              <span class="em3d__nome">
+                {m.nome} <Icone nome="girar" />
+              </span>
+              <span class="em3d__texto">{m.pontos.length} pontos para explorar</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
   <nav class="faixa grade" aria-label="Ambientes">
     <ul role="list">
@@ -65,9 +91,9 @@ import { empresa } from '../../config/empresa';
                 <a class="botao" href={u(`/orcamento?ambiente=${a.id}`)}>
                   Orçar {a.singular} <Icone nome="seta" />
                 </a>
-                {a.id === 'cozinha' && (
-                  <a class="botao botao--linha" href={u('/projetos/cozinha-em-u')}>
-                    Ver cozinha em 3D
+                {modeloPorAmbiente(a.id) && (
+                  <a class="botao botao--linha" href={u(`/projetos/${modeloPorAmbiente(a.id)!.slug}`)}>
+                    Ver em 3D <Icone nome="girar" />
                   </a>
                 )}
               </div>
@@ -92,19 +118,283 @@ import { empresa } from '../../config/empresa';
   .cabeca .t-lead {
     max-width: 52ch;
   }
+  /* ——— Em 3D ——— */
+  .em3d {
+    padding-bottom: clamp(48px, 6vw, 80px);
+    scroll-margin-top: calc(var(--topo) + 16px);
+  }
+  .em3d__cabeca {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .em3d__lista {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: calc(var(--margem) * -1);
+    padding-inline: var(--margem);
+    scroll-padding-inline: var(--margem);
+  }
+  .em3d__lista::-webkit-scrollbar {
+    display: none;
+  }
+  .em3d__lista li {
+    scroll-snap-align: start;
+  }
+  .em3d__lista a {
+    display: grid;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .em3d__imagem {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--raio);
+    overflow: hidden;
+    background: #eae4dd;
+    margin-bottom: 6px;
+  }
+  .em3d__imagem :global(picture),
+  .em3d__imagem :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .em3d__imagem :global(img) {
+    transition: transform 0.9s var(--ease);
+  }
+  .em3d__lista a:hover .em3d__imagem :global(img) {
+    transform: scale(1.04);
+  }
+  .em3d__imagem .selo-imagem {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: rgb(245 237 226 / 0.9);
+    border-color: transparent;
+  }
+  .em3d__nome {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 650;
+    font-size: 1.15rem;
+    letter-spacing: -0.015em;
+  }
+  .em3d__nome :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--madeira);
+  }
+  .em3d__texto {
+    font-size: 0.92rem;
+    color: var(--tinta-2);
+  }
+  @media (min-width: 900px) {
+    .em3d__lista {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
   .grade ul {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px 12px;
   }
   @media (min-width: 900px) {
-    .grade ul {
+    /* ——— Em 3D ——— */
+  .em3d {
+    padding-bottom: clamp(48px, 6vw, 80px);
+    scroll-margin-top: calc(var(--topo) + 16px);
+  }
+  .em3d__cabeca {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .em3d__lista {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: calc(var(--margem) * -1);
+    padding-inline: var(--margem);
+    scroll-padding-inline: var(--margem);
+  }
+  .em3d__lista::-webkit-scrollbar {
+    display: none;
+  }
+  .em3d__lista li {
+    scroll-snap-align: start;
+  }
+  .em3d__lista a {
+    display: grid;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .em3d__imagem {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--raio);
+    overflow: hidden;
+    background: #eae4dd;
+    margin-bottom: 6px;
+  }
+  .em3d__imagem :global(picture),
+  .em3d__imagem :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .em3d__imagem :global(img) {
+    transition: transform 0.9s var(--ease);
+  }
+  .em3d__lista a:hover .em3d__imagem :global(img) {
+    transform: scale(1.04);
+  }
+  .em3d__imagem .selo-imagem {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: rgb(245 237 226 / 0.9);
+    border-color: transparent;
+  }
+  .em3d__nome {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 650;
+    font-size: 1.15rem;
+    letter-spacing: -0.015em;
+  }
+  .em3d__nome :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--madeira);
+  }
+  .em3d__texto {
+    font-size: 0.92rem;
+    color: var(--tinta-2);
+  }
+  @media (min-width: 900px) {
+    .em3d__lista {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .grade ul {
       grid-template-columns: repeat(3, 1fr);
       gap: 36px 20px;
     }
   }
   @media (min-width: 1280px) {
-    .grade ul {
+    /* ——— Em 3D ——— */
+  .em3d {
+    padding-bottom: clamp(48px, 6vw, 80px);
+    scroll-margin-top: calc(var(--topo) + 16px);
+  }
+  .em3d__cabeca {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .em3d__lista {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: calc(var(--margem) * -1);
+    padding-inline: var(--margem);
+    scroll-padding-inline: var(--margem);
+  }
+  .em3d__lista::-webkit-scrollbar {
+    display: none;
+  }
+  .em3d__lista li {
+    scroll-snap-align: start;
+  }
+  .em3d__lista a {
+    display: grid;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .em3d__imagem {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--raio);
+    overflow: hidden;
+    background: #eae4dd;
+    margin-bottom: 6px;
+  }
+  .em3d__imagem :global(picture),
+  .em3d__imagem :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .em3d__imagem :global(img) {
+    transition: transform 0.9s var(--ease);
+  }
+  .em3d__lista a:hover .em3d__imagem :global(img) {
+    transform: scale(1.04);
+  }
+  .em3d__imagem .selo-imagem {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: rgb(245 237 226 / 0.9);
+    border-color: transparent;
+  }
+  .em3d__nome {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 650;
+    font-size: 1.15rem;
+    letter-spacing: -0.015em;
+  }
+  .em3d__nome :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--madeira);
+  }
+  .em3d__texto {
+    font-size: 0.92rem;
+    color: var(--tinta-2);
+  }
+  @media (min-width: 900px) {
+    .em3d__lista {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .grade ul {
       grid-template-columns: repeat(6, 1fr);
       gap: 20px;
     }

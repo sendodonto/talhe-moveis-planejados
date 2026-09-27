@@ -31,6 +31,7 @@ Visitante no celular, com uma mão, entre outras abas de concorrentes. Pedido de
 
 ## Evidence on Hand
 - Modelo 3D de uma cozinha em U (reconstrução aproximada de uma referência do Instagram; medidas estimadas). Renders gerados a partir dele em `src/assets/renders/`.
+- Closet Nogueira e Sala Carvalho: conceitos autorais de apresentação em 3D (medidas aproximadas, não são projeto executivo nem obras executadas), com portas e gavetas animadas.
 - Fotos de referência do Unsplash com créditos em `src/data/creditos-fotos.json`. Não são obras da empresa; o usuário aceitou usar foto de referência no herói.
 - Não existem: clientes, depoimentos, números de projetos, prazos, garantias, prêmios, anos de experiência. Não fabricar.
 

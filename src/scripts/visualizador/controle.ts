@@ -4,10 +4,12 @@
 import type { Motor, PosicaoMarcador } from './motor';
 import type { Qualidade } from './cena';
 import type { Orbita } from './camera';
+import type { ConfigModelo } from './modelos';
 
 interface Dados {
   modelo: string;
-  pontos: { no: string; numero: number; titulo: string; vista: Omit<Orbita, 'alvo'> }[];
+  config: ConfigModelo;
+  pontos: { no: string; numero: number; titulo: string; animacao?: string; vista: Omit<Orbita, 'alvo'> }[];
 }
 
 const reduzirMovimento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -102,6 +104,8 @@ export function iniciarVisualizador(raiz: HTMLElement) {
     }
     painelDetalhe.hidden = !no;
     if (no && mover && motor) motor.focar(no);
+    // Porta ou gaveta ligada ao ponto abre; ao sair do ponto, fecha.
+    motor?.animar(dados.pontos.find((p) => p.no === no)?.animacao ?? null);
   }
   const indiceAtivo = () => dados.pontos.findIndex((p) => p.no === ativo);
   const passo = (d: number) => {
@@ -232,13 +236,14 @@ export function iniciarVisualizador(raiz: HTMLElement) {
       return;
     }
     setEstado('carregando');
-    anunciar('Carregando a cozinha em 3D…');
+    anunciar('Carregando o modelo 3D…');
     let ultimoAnuncio = 0;
     try {
       const { criarMotor } = await import('./motor');
       motor = await criarMotor({
         container: alvoCanvas,
         modelo: dados.modelo,
+        config: dados.config,
         qualidade: detectarQualidade(),
         reduzirMovimento: reduzirMovimento(),
         vistas: Object.fromEntries(dados.pontos.map((p) => [p.no, { ...p.vista, alvo: [0, 0, 0] }])),
@@ -247,7 +252,7 @@ export function iniciarVisualizador(raiz: HTMLElement) {
           const pct = Math.floor(f * 4) * 25;
           if (pct > ultimoAnuncio && pct < 100) {
             ultimoAnuncio = pct;
-            anunciar(`Carregando a cozinha em 3D: ${pct}%`);
+            anunciar(`Carregando o modelo 3D: ${pct}%`);
           }
         },
         aoMoverMarcadores: moverMarcadores,
@@ -262,9 +267,9 @@ export function iniciarVisualizador(raiz: HTMLElement) {
       });
       atualizarMargens();
       setEstado('ativo');
-      anunciar('Cozinha em 3D pronta. Arraste para girar; use a lista de pontos para ver os detalhes.');
+      anunciar('Modelo 3D pronto. Arraste para girar; use a lista de pontos para ver os detalhes.');
       motor.permitirRoda(imersivo);
-      if (ativo) motor.focar(ativo);
+      if (ativo) selecionar(ativo);
       if (!dicaJaVista()) mostrarDica(true);
       observarVisibilidade();
     } catch (e) {

@@ -9,6 +9,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import type { ConfigModelo } from './modelos';
 
 export type Qualidade = 'alta' | 'media' | 'baixa';
 
@@ -21,6 +22,8 @@ export interface HotspotModelo {
   no: string;
   titulo: string;
   descricao: string;
+  /** Animação do GLB ligada ao ponto (porta, gaveta), se houver. */
+  animacao?: string;
   posicao: THREE.Vector3;
 }
 
@@ -30,21 +33,11 @@ export interface CenaMontada {
   hotspots: HotspotModelo[];
   malhas: THREE.Mesh[];
   limites: THREE.Box3;
+  animacoes: THREE.AnimationClip[];
   /** Recalcula o mapa de sombras (a cena é estática: só é preciso uma vez). */
   atualizarSombras(): void;
   dispose(): void;
 }
-
-// Fontes de luz que existem no modelo, mas não vêm no GLB (a iluminação do Blender
-// não é exportada). Posições e tamanhos tirados das próprias peças de LED e pendentes.
-const LUZES_DE_AREA: Array<{ pos: [number, number, number]; w: number; h: number; intensidade: number }> = [
-  // Fitas sob a faixa amadeirada, iluminando bancada e revestimento
-  { pos: [-1.235, 1.605, -0.09], w: 0.05, h: 2.36, intensidade: 5.5 },
-  { pos: [-0.3, 1.605, -1.255], w: 2.27, h: 0.05, intensidade: 5.5 },
-  // Saídas de luz dos dois pendentes da península
-  { pos: [1.07, 1.755, 1.17], w: 0.13, h: 0.13, intensidade: 14 },
-  { pos: [1.07, 1.755, -0.22], w: 0.13, h: 0.13, intensidade: 14 },
-];
 
 export function configurarRenderer(renderer: THREE.WebGLRenderer, qualidade: Qualidade) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -62,6 +55,7 @@ export function configurarRenderer(renderer: THREE.WebGLRenderer, qualidade: Qua
 export async function montarCena(
   renderer: THREE.WebGLRenderer,
   url: string,
+  cfg: ConfigModelo,
   qualidade: Qualidade,
   aoProgredir?: (fracao: number) => void,
 ): Promise<CenaMontada> {
@@ -96,26 +90,36 @@ export async function montarCena(
   // Preenchimento suave de céu/piso para não afundar os cantos.
   scene.add(new THREE.HemisphereLight(0xf3efe8, 0x6b5a48, 0.55));
 
-  // Claridade da janela: plano luminoso do lado de fora do vidro fosco.
-  const janela = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.9, 0.9),
-    new THREE.MeshBasicMaterial({ color: 0xf6f3ee, toneMapped: false }),
-  );
-  janela.position.set(-1.72, 1.3, -0.14);
-  janela.rotation.y = Math.PI / 2;
-  scene.add(janela);
-
+  // Fontes de luz que existem no modelo mas não vêm no GLB (a iluminação do
+  // Blender não é exportada): fitas de LED, pendentes e a claridade da janela.
   RectAreaLightUniformsLib.init();
-  for (const l of LUZES_DE_AREA) {
-    const luz = new THREE.RectAreaLight(0xffb36b, l.intensidade, l.w, l.h);
+  for (const l of cfg.luzes) {
+    const luz = new THREE.RectAreaLight(l.cor ?? 0xffb36b, l.intensidade, l.w, l.h);
     luz.position.set(...l.pos);
-    luz.lookAt(l.pos[0], 0, l.pos[2]);
+    if (l.alvo) luz.lookAt(...l.alvo);
+    else luz.lookAt(l.pos[0], 0, l.pos[2]);
     scene.add(luz);
   }
-  const luzJanela = new THREE.RectAreaLight(0xf2f4f6, 2.2, 1.6, 0.66);
-  luzJanela.position.set(-1.43, 1.3, -0.14);
-  luzJanela.lookAt(2, 1.1, -0.14);
-  scene.add(luzJanela);
+  if (cfg.janela) {
+    const j = cfg.janela;
+    const fora = new THREE.Mesh(
+      new THREE.PlaneGeometry(j.largura * 1.2, j.altura * 1.3),
+      new THREE.MeshBasicMaterial({ color: 0xf6f3ee, toneMapped: false }),
+    );
+    const luz = new THREE.RectAreaLight(0xf2f4f6, j.intensidade ?? 2.2, j.largura, j.altura);
+    const [x, y, z] = j.centro;
+    if (j.eixo === 'x') {
+      fora.position.set(x - 0.3, y, z);
+      fora.rotation.y = Math.PI / 2;
+      luz.position.set(x, y, z);
+      luz.lookAt(x + 3, y - 0.2, z);
+    } else {
+      fora.position.set(x, y, z - 0.3);
+      luz.position.set(x, y, z);
+      luz.lookAt(x, y - 0.2, z + 3);
+    }
+    scene.add(fora, luz);
+  }
 
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const gltf = await loader.loadAsync(url, (e) => {
@@ -146,11 +150,12 @@ export async function montarCena(
   modelo.updateMatrixWorld(true);
   modelo.traverse((obj) => {
     if (obj.name.startsWith('HOTSPOT_')) {
-      const extras = obj.userData as { titulo?: string; descricao?: string };
+      const extras = obj.userData as { titulo?: string; descricao?: string; animation?: string };
       hotspots.push({
         no: obj.name,
         titulo: extras.titulo ?? obj.name.replace('HOTSPOT_', ''),
         descricao: extras.descricao ?? '',
+        animacao: extras.animation,
         posicao: obj.getWorldPosition(new THREE.Vector3()),
       });
     }
@@ -194,6 +199,7 @@ export async function montarCena(
     hotspots,
     malhas,
     limites,
+    animacoes: gltf.animations,
     atualizarSombras() {
       renderer.shadowMap.needsUpdate = true;
     },

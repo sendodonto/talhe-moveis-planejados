@@ -83,6 +83,25 @@ pausa fora da tela, resolução limitada e reduzida automaticamente em aparelhos
 `prefers-reduced-motion` respeitado, teclado (setas, +/−, 0), falha e ausência de WebGL
 com mensagem e alternativa funcional.
 
+## Ambientes em 3D
+
+Três estudos: cozinha (`/projetos/cozinha-em-u`), closet (`/projetos/closet-nogueira`) e sala (`/projetos/sala-carvalho`).
+Todos usam o mesmo visualizador (`src/components/Visualizador3D.astro`).
+
+| Onde | O quê |
+|---|---|
+| `src/scripts/visualizador/modelos.ts` | câmera inicial, limites, volumes que a câmera não atravessa, luzes de LED e janela |
+| `src/content/modelos.ts` | textos da página, imagens, materiais e pontos de cada ambiente |
+| `src/content/cozinha.ts`, `closet.ts`, `sala.ts` | texto complementar e enquadramento de cada ponto |
+
+Para acrescentar um ambiente:
+1. `npm run modelo -- arquivo.glb nome` (aceita Draco; simplifica malhas microscópicas; preserva hotspots e animações)
+2. configure em `modelos.ts`, adicione as vistas em `src/data/vistas-render.json` e rode `npm run renders`
+3. adicione o item em `src/content/modelos.ts` — a página é gerada sozinha.
+
+Pontos com a propriedade `animation` no GLB abrem a porta/gaveta correspondente quando selecionados
+e fecham ao sair do ponto. Os GLBs originais não vão para o repositório.
+
 ## Verificação
 
 Com `npm run preview` rodando:
