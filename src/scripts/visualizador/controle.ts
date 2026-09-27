@@ -16,6 +16,9 @@ const reduzirMovimento = () => matchMedia('(prefers-reduced-motion: reduce)').ma
 const telaPequena = () => matchMedia('(max-width: 899px), (pointer: coarse)').matches;
 
 function detectarQualidade(): Qualidade {
+  // ?qualidade=baixa|media|alta força o nível (útil para testar)
+  const forcada = new URLSearchParams(location.search).get('qualidade');
+  if (forcada === 'baixa' || forcada === 'media' || forcada === 'alta') return forcada;
   const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   const memoria = nav.deviceMemory ?? 8;
   const nucleos = nav.hardwareConcurrency ?? 8;

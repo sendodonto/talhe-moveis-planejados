@@ -117,11 +117,9 @@ export const MODELOS: Record<string, ConfigModelo> = {
       [-3, -1, -3, 3, 3.2, -1.52], // parede do fundo
     ],
     luzes: [
-      // perfis verticais: iluminam o interior dos módulos
-      { pos: [-1.065, 1.4, -1.0], w: 0.03, h: 2.4, intensidade: 3, alvo: [-0.6, 1.4, -1.5] },
-      { pos: [-0.155, 1.4, -1.0], w: 0.03, h: 2.4, intensidade: 3, alvo: [0.3, 1.4, -1.5] },
-      { pos: [0.755, 1.4, -1.0], w: 0.03, h: 2.4, intensidade: 3, alvo: [1.2, 1.4, -1.5] },
-      { pos: [1.625, 1.4, -1.0], w: 0.03, h: 2.4, intensidade: 3, alvo: [1.2, 1.4, -1.5] },
+      // Perfis de LED verticais: uma luz larga cobrindo os módulos do fundo
+      // (quatro luzes separadas custavam quase o dobro por quadro no celular).
+      { pos: [0.28, 1.4, -1.0], w: 2.7, h: 2.4, intensidade: 1.1, alvo: [0.28, 1.4, -2] },
       // LED sob o maleiro da sapateira
       { pos: [-1.125, 2.22, -0.01], w: 0.04, h: 2.2, intensidade: 5 },
     ],
